@@ -8,10 +8,11 @@
           <th class="bracket-number">枠番</th>
           <th class="horse-number">馬番</th>
           <th class="lane"></th>
+          <th class="place">着</th>
         <tr>
       </table>
     </div>
-    <div id="settings">
+    <div id="settings" cellspacing="0">
       <table>
         <tr>
           <td>Number of Horses:</td>
@@ -22,6 +23,75 @@
             <button>Start</button>
           </td>
         </tr>
+        <tr id="bet_tanshou">
+          <td class="bet">単勝(たんしょう - Win)</td>
+          <td class="options">
+            <input></input>
+          </td>
+          <td class="desc">Bet which horse will place 1st</td>
+        </tr>
+        <tr id="bet_fukushou">
+          <td class="bet">複勝(複勝 - Places)</td>
+          <td class="options">
+            <input></input>
+          </td>
+          <td class="desc">Bet which horse will place top 3 (top 2 if there are &lt; 8 horses)</td>
+        </tr>
+        <tr id="bet_wakutan">
+          <td class="bet">枠単(わくたん - Bracket Exacta)</td>
+          <td class="options">
+            <input></input>
+          </td>
+          <td class="desc">Bet which bracket's horse will place 1st</td>
+        </tr>
+        <tr id="bet_wakufuku">
+          <td class="bet">枠複(わくふく - Quinella)</td>
+          <td class="options">
+            <input></input> ― <input></input>
+          </td>
+          <td class="desc">
+            Bet which brackets' horses will place top 2, in any order<br>
+            Also called 枠連(わくれん)
+          </td>
+        </tr>
+        <tr id="bet_umafuku">
+          <td class="bet">馬複(うまふく - Quinella)</td>
+          <td class="options">
+            <input></input> ― <input></input>
+          </td>
+          <td class="desc">
+            Bet which 2 horses will place top 2, in any order<br>
+            Also called 馬連(うまれん)
+          </td>
+        </tr>
+        <tr id="bet_umatan">
+          <td class="bet">馬単(うまたん - Exacta)</td>
+          <td class="options">
+            <input></input> → <input></input>
+          </td>
+          <td class="desc">Bet which 2 horses will place top 2, in order (difficult)</td>
+        </tr>
+        <tr id="bet_wide">
+          <td class="bet">ワイド(Wide)</td>
+          <td class="options">
+            <input></input> ― <input></input>
+          </td>
+          <td class="desc">Bet which 2 horses will place top 3, in any order</td>
+        </tr>
+        <tr id="bet_umarentan">
+          <td class="bet">3連単(さんれんたん - Trifecta)</td>
+          <td class="options">
+            <input></input> → <input></input> → <input></input>
+          </td>
+          <td class="desc">Bet which 3 horses will place top 3, in order (this is the most difficult)</td>
+        </tr>
+        <tr id="bet_sanrenfuku">
+          <td class="bet">3連複(さんれんふく - Trio)</td>
+          <td class="options">
+            <input></input> ― <input></input> ― <input></input>
+          </td>
+          <td class="desc">Bet which 3 horses will place top 3, in any order</td>
+        </tr>
       </table>
     </div>
   </body>
@@ -30,11 +100,12 @@
     body { padding: 10px; }
     #track,
     #track th,
-    #track td { border: 1px solid #000; }
+    #track td, { border: 1px solid #000; }
     #track { width: 50%; }
       #track .bracket-number,
-      #track .horse-number { width: 5%; }
-      #track .lane { width: 90%; }
+      #track .horse-number,
+      #track .place { width: 5%; }
+      #track .lane { width: 85%; }
       #track .bracket-1 { background: #DDD; }
       #track .bracket-2 { background: #666; }
       #track .bracket-3 { background: #F66; }
@@ -44,7 +115,12 @@
       #track .bracket-7 { background: #FB9; }
       #track .bracket-8 { background: #F9B; }
 
-    #settings { margin: 10px; }
+    #settings { margin-top: 10px; }
+      #settings th, td {
+        border: 1px solid #999;
+        padding: 3px;
+      }
+      #settings input:disabled { background: #EEE; }
   </style>
 
   <script>
@@ -57,6 +133,16 @@
     var numHorsesInput = document.querySelector('.js-num-horses');
     var brackets = [];
 
+    var $tanshou = document.querySelector('#bet_tanshou');
+    var $fukushou = document.querySelector('#bet_fukushou');
+    var $wakutan = document.querySelector('#bet_wakutan');
+    var $wakufuku = document.querySelector('#bet_wakufuku');
+    var $umatan = document.querySelector('#bet_umatan');
+    var $umafuku = document.querySelector('#bet_umafuku');
+    var $wide = document.querySelector('#bet_wide');
+    var $umarentan = document.querySelector('#bet_umarentan');
+    var $sanrenfuku = document.querySelector('#bet_sanrenfuku');
+
     numHorsesInput.addEventListener('change', function () {
       console.log('onChange');
       this.value = Math.min(MAX_HORSES, Math.max(MIN_HORSES, this.value)) || 1;
@@ -65,11 +151,13 @@
       makeBrackets(this.value);
       fillTrack();
 
-      if (this.value < MAX_BRACKETS) {
+      if (this.value <= MAX_BRACKETS) {
         document.querySelectorAll('.bracket').forEach(function (bracket) {
           bracket.style['visibility'] = 'hidden';
         });
       }
+
+      adjustBets(this.value);
     });
 
     function clearTrack() {
@@ -98,10 +186,14 @@
         horse.className = 'js-horse-' + i;
         lane.appendChild(horse);
 
+        var place = document.createElement('td');
+        lane.appendChild(place);
+
         brackets[bracket].push({
           html: lane,
           horseNumber: horseNumber,
           horse: horse,
+          place: place,
         });
       }
     }
@@ -127,8 +219,41 @@
       }
     }
 
+    function adjustBets(numHorses) {
+      if (numHorses <= MAX_BRACKETS) {
+        disableInputs($wakutan);
+        disableInputs($wakufuku);
+
+        if (numHorses < 5) {
+          disableInputs($fukushou);
+
+          if (numHorses < 4) {
+            disableInputs($wide);
+            disableInputs($umarentan);
+            disableInputs($sanrenfuku);
+
+            if (numHorses < 3) {
+              disableInputs($umafuku)
+              disableInputs($umatan);
+
+              if (parseInt(numHorses) === 1) {
+                disableInputs($tanshou);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function disableInputs($bet) {
+      console.log($bet);
+      $bet.querySelectorAll('input').forEach(function ($input) {
+        $input.disabled = true;
+      });
+    }
+
     // init
-    numHorsesInput.value = MIN_HORSES;
+    numHorsesInput.value = MAX_HORSES;
     var event = document.createEvent('HTMLEvents');
     event.initEvent('change', true, false);
     numHorsesInput.dispatchEvent(event);
