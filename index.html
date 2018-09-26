@@ -5,7 +5,7 @@
     <div id="race_container">
       <table id="track">
         <tr>
-          <th class="bracket-number">枠番</th>
+          <th id="bracket_header" class="bracket-header">枠番</th>
           <th class="horse-number">馬番</th>
           <th class="lane"></th>
           <th class="place">着</th>
@@ -102,7 +102,7 @@
     #track th,
     #track td, { border: 1px solid #000; }
     #track { width: 50%; }
-      #track .bracket-number,
+      #track .bracket-header,
       #track .horse-number,
       #track .place { width: 5%; }
       #track .lane { width: 85%; }
@@ -136,6 +136,7 @@
     const SPEED = 3;
 
     var $track = document.querySelector('#track');
+    var $bracketHeader = document.querySelector('#bracket_header');
     var $numHorses = document.querySelector('#num_horses');
     var $start = document.querySelector('#start');
     var brackets = [];
@@ -143,15 +144,15 @@
     var intervalId = null;
     var places = [];
 
-    var $tanshou = document.querySelector('#bet_tanshou');
-    var $fukushou = document.querySelector('#bet_fukushou');
-    var $wakutan = document.querySelector('#bet_wakutan');
-    var $wakufuku = document.querySelector('#bet_wakufuku');
-    var $umatan = document.querySelector('#bet_umatan');
-    var $umafuku = document.querySelector('#bet_umafuku');
-    var $wide = document.querySelector('#bet_wide');
-    var $umarentan = document.querySelector('#bet_umarentan');
-    var $sanrenfuku = document.querySelector('#bet_sanrenfuku');
+    var $tanshou = document.querySelector('#bet_tanshou').querySelectorAll('input');
+    var $fukushou = document.querySelector('#bet_fukushou').querySelectorAll('input');
+    var $wakutan = document.querySelector('#bet_wakutan').querySelectorAll('input');
+    var $wakufuku = document.querySelector('#bet_wakufuku').querySelectorAll('input');
+    var $umatan = document.querySelector('#bet_umatan').querySelectorAll('input');
+    var $umafuku = document.querySelector('#bet_umafuku').querySelectorAll('input');
+    var $wide = document.querySelector('#bet_wide').querySelectorAll('input');
+    var $umarentan = document.querySelector('#bet_umarentan').querySelectorAll('input');
+    var $sanrenfuku = document.querySelector('#bet_sanrenfuku').querySelectorAll('input');
 
     $numHorses.addEventListener('change', function () {
       console.log('onChange');
@@ -162,9 +163,12 @@
       fillTrack();
 
       if (this.value <= MAX_BRACKETS) {
+        $bracketHeader.style.display = 'none';
         document.querySelectorAll('.bracket').forEach(function ($bracket) {
-          $bracket.style.visibility = 'hidden';
+          $bracket.style.display = 'none';
         });
+      } else {
+        $bracketHeader.style.display = 'table-cell';
       }
 
       adjustBets(this.value);
@@ -265,7 +269,7 @@
     }
 
     function disableInputs($bet) {
-      $bet.querySelectorAll('input').forEach(function ($input) {
+      $bet.forEach(function ($input) {
         $input.disabled = true;
       });
     }
@@ -284,6 +288,7 @@
         }
       }
       places = [];
+      checkBets();
 
       intervalId = window.setInterval(function () {
         for (var i = 0; i < brackets.length; i++) {
@@ -303,6 +308,7 @@
         if (places.length == $numHorses.value) {
           window.clearInterval(intervalId);
           intervalId = null;
+          checkBets();
         }
       }, RACE_INTERVAL);
     });
@@ -310,6 +316,7 @@
     function finishHorse(horse) {
       places.push(horse);
       horse.$place.innerText = places.length;
+
       if (places.length === 1) {
         horse.$place.style.background = '#EE5';
       } else if (places.length === 2) {
@@ -317,7 +324,43 @@
       } else if (places.length === 3) {
         horse.$place.style.background = '#BA6';
       }
+
       console.log('horse #' + horse.horseNumber + ' (bracket #' + horse.bracketNumber + ') finishes');
+    }
+
+    function checkBets() {
+      var done = places.length > 0;
+      checkWin($tanshou, done && !!$tanshou[0].value && (
+        parseInt($tanshou[0].value) === places[0].horseNumber
+      ));
+      checkWin($fukushou, done && !!$fukushou[0].value && (
+            false
+      ));
+      checkWin($wakutan, done && !!$wakutan[0].value && (
+            false
+      ));
+      checkWin($wakufuku, done && !!$wakufuku[0].value && !!$wakufuku[1].value && (
+            false
+      ));
+      checkWin($umatan, done && !!$umatan[0].value && !!$umatan[1].value && (
+            false
+      ));
+      checkWin($umafuku, done && !!$umafuku[0].value && !!$umafuku[1].value && (
+            false
+      ));
+      checkWin($wide, done && !!$wide[0].value && !!$wide[1].value && (
+            false
+      ));
+      checkWin($umarentan, done && !!$umarentan[0].value && !!$umarentan[1].value && !!$umarentan[2].value && (
+            false
+      ));
+      checkWin($sanrenfuku, done && !!sanrenfuku[0] && !!sanrenfuku[1] && !!sanrenfuku[2] && (
+            false
+      ));
+    }
+
+    function checkWin($bet, win) {
+      $bet[0].parentElement.style.background = win ? '#6F6' : '#FFF';
     }
 
     // init
