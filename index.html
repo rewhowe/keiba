@@ -129,8 +129,8 @@
     const BRACKET_SIZE = 2;
     const MAX_BRACKETS = MAX_HORSES / BRACKET_SIZE;
 
-    var track = document.querySelector('#track');
-    var numHorsesInput = document.querySelector('.js-num-horses');
+    var $track = document.querySelector('#track');
+    var $numHorses = document.querySelector('.js-num-horses');
     var brackets = [];
 
     var $tanshou = document.querySelector('#bet_tanshou');
@@ -143,7 +143,7 @@
     var $umarentan = document.querySelector('#bet_umarentan');
     var $sanrenfuku = document.querySelector('#bet_sanrenfuku');
 
-    numHorsesInput.addEventListener('change', function () {
+    $numHorses.addEventListener('change', function () {
       console.log('onChange');
       this.value = Math.min(MAX_HORSES, Math.max(MIN_HORSES, this.value)) || 1;
 
@@ -152,8 +152,8 @@
       fillTrack();
 
       if (this.value <= MAX_BRACKETS) {
-        document.querySelectorAll('.bracket').forEach(function (bracket) {
-          bracket.style['visibility'] = 'hidden';
+        document.querySelectorAll('.bracket').forEach(function ($bracket) {
+          $bracket.style['visibility'] = 'hidden';
         });
       }
 
@@ -165,8 +165,8 @@
         brackets[i] = [];
       }
 
-      var lane = undefined;
-      while (lane = document.querySelector('.js-lane')) lane.remove();
+      var $lane = undefined;
+      while ($lane = document.querySelector('.js-lane')) $lane.remove();
     }
 
     function makeBrackets(numHorses) {
@@ -175,25 +175,25 @@
       for (var i = 1; i <= numHorses; i++) {
         bracket = ((MAX_BRACKETS * 2) - i) % MAX_BRACKETS;
 
-        var lane = document.createElement('tr');
-        lane.className = 'js-lane';
+        var $lane = document.createElement('tr');
+        $lane.className = 'js-lane';
 
-        var horseNumber = document.createElement('td');
-        lane.appendChild(horseNumber);
+        var $horseNumber = document.createElement('td');
+        $lane.appendChild($horseNumber);
 
-        var horse = document.createElement('td');
-        horse.innerText = '🐴';
-        horse.className = 'js-horse-' + i;
-        lane.appendChild(horse);
+        var $horse = document.createElement('td');
+        $horse.innerText = '🐴';
+        $horse.className = 'js-horse-' + i;
+        $lane.appendChild($horse);
 
-        var place = document.createElement('td');
-        lane.appendChild(place);
+        var $place = document.createElement('td');
+        $lane.appendChild($place);
 
         brackets[bracket].push({
-          html: lane,
-          horseNumber: horseNumber,
-          horse: horse,
-          place: place,
+          $html: $lane,
+          $horseNumber: $horseNumber,
+          $horse: $horse,
+          $place: $place,
         });
       }
     }
@@ -205,16 +205,16 @@
       for (var i = 0; i < brackets.length; i++) {
         if (brackets[i].length === 0) continue;
 
-        var bracketNumber = document.createElement('td');
-        bracketNumber.className = 'bracket bracket-' + (i + 1);
-        bracketNumber.innerText = i + 1;
-        bracketNumber.rowSpan = brackets[i].length;
-        brackets[i][0].html.insertBefore(bracketNumber, brackets[i][0].horseNumber);
+        var $bracketNumber = document.createElement('td');
+        $bracketNumber.className = 'bracket bracket-' + (i + 1);
+        $bracketNumber.innerText = i + 1;
+        $bracketNumber.rowSpan = brackets[i].length;
+        brackets[i][0].$html.insertBefore($bracketNumber, brackets[i][0].$horseNumber);
 
         for (var j = 0; j < brackets[i].length; j++) {
-          brackets[i][j].horseNumber.innerText = horseNumber;
+          brackets[i][j].$horseNumber.innerText = horseNumber;
           horseNumber += 1;
-          track.append(brackets[i][j].html);
+          $track.append(brackets[i][j].$html);
         }
       }
     }
@@ -246,16 +246,15 @@
     }
 
     function disableInputs($bet) {
-      console.log($bet);
       $bet.querySelectorAll('input').forEach(function ($input) {
         $input.disabled = true;
       });
     }
 
     // init
-    numHorsesInput.value = MAX_HORSES;
+    $numHorses.value = MAX_HORSES;
     var event = document.createEvent('HTMLEvents');
     event.initEvent('change', true, false);
-    numHorsesInput.dispatchEvent(event);
+    $numHorses.dispatchEvent(event);
   </script>
 </html>
