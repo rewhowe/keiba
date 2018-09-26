@@ -17,10 +17,10 @@
         <tr>
           <td>Number of Horses:</td>
           <td>
-            <input class="js-num-horses">
+            <input id="num_horses">
           </td>
           <td>
-            <button>Start</button>
+            <button id="start">Start</button>
           </td>
         </tr>
         <tr id="bet_tanshou">
@@ -114,6 +114,10 @@
       #track .bracket-6 { background: #6F6; }
       #track .bracket-7 { background: #FB9; }
       #track .bracket-8 { background: #F9B; }
+      #track .horse {
+        width: 0;
+        text-align: right;
+      }
 
     #settings { margin-top: 10px; }
       #settings th, td {
@@ -128,10 +132,16 @@
     const MAX_HORSES = 16;
     const BRACKET_SIZE = 2;
     const MAX_BRACKETS = MAX_HORSES / BRACKET_SIZE;
+    const RACE_INTERVAL = 1000 / 30; // fps
+    const SPEED = 3;
 
     var $track = document.querySelector('#track');
-    var $numHorses = document.querySelector('.js-num-horses');
+    var $numHorses = document.querySelector('#num_horses');
+    var $start = document.querySelector('#start');
     var brackets = [];
+
+    var intervalId = null;
+    var places = [];
 
     var $tanshou = document.querySelector('#bet_tanshou');
     var $fukushou = document.querySelector('#bet_fukushou');
@@ -153,7 +163,7 @@
 
       if (this.value <= MAX_BRACKETS) {
         document.querySelectorAll('.bracket').forEach(function ($bracket) {
-          $bracket.style['visibility'] = 'hidden';
+          $bracket.style.visibility = 'hidden';
         });
       }
 
@@ -181,10 +191,13 @@
         var $horseNumber = document.createElement('td');
         $lane.appendChild($horseNumber);
 
-        var $horse = document.createElement('td');
+        // $horse.className = 'js-horse-' + i;
+        var $horseHolder = document.createElement('td');
+        var $horse = document.createElement('div');
         $horse.innerText = '🐴';
-        $horse.className = 'js-horse-' + i;
-        $lane.appendChild($horse);
+        $horse.className = 'horse';
+        $horseHolder.appendChild($horse);
+        $lane.appendChild($horseHolder);
 
         var $place = document.createElement('td');
         $lane.appendChild($place);
@@ -194,6 +207,8 @@
           $horseNumber: $horseNumber,
           $horse: $horse,
           $place: $place,
+          bracketNumber: 0,
+          horseNumber: 0,
         });
       }
     }
@@ -205,13 +220,17 @@
       for (var i = 0; i < brackets.length; i++) {
         if (brackets[i].length === 0) continue;
 
+        var bracketNumber = i + 1;
+
         var $bracketNumber = document.createElement('td');
-        $bracketNumber.className = 'bracket bracket-' + (i + 1);
-        $bracketNumber.innerText = i + 1;
+        $bracketNumber.className = 'bracket bracket-' + (bracketNumber);
+        $bracketNumber.innerText = bracketNumber;
         $bracketNumber.rowSpan = brackets[i].length;
         brackets[i][0].$html.insertBefore($bracketNumber, brackets[i][0].$horseNumber);
 
         for (var j = 0; j < brackets[i].length; j++) {
+          brackets[i][j].bracketNumber = bracketNumber;
+          brackets[i][j].horseNumber = horseNumber
           brackets[i][j].$horseNumber.innerText = horseNumber;
           horseNumber += 1;
           $track.append(brackets[i][j].$html);
@@ -249,6 +268,56 @@
       $bet.querySelectorAll('input').forEach(function ($input) {
         $input.disabled = true;
       });
+    }
+
+    $start.addEventListener('click', function () {
+      if (intervalId !== null) return;
+
+      console.log('start race with ' + $numHorses.value + ' horses');
+
+      // reset
+      for (var i = 0; i < brackets.length; i++) {
+        for (var j = 0; j < brackets[i].length; j++) {
+          brackets[i][j].$horse.style.width = 0;
+          brackets[i][j].$place.innerText = '';
+          brackets[i][j].$place.style.background = '#FFF';
+        }
+      }
+      places = [];
+
+      intervalId = window.setInterval(function () {
+        for (var i = 0; i < brackets.length; i++) {
+          for (var j = 0; j < brackets[i].length; j++) {
+            var progress = parseInt(brackets[i][j].$horse.style.width) || 0;
+
+            if (progress >= 100) continue;
+
+            progress += Math.ceil(Math.random() * SPEED);
+
+            if (progress >= 100) finishHorse(brackets[i][j]);
+
+            brackets[i][j].$horse.style.width = Math.min(100, progress) + '%';
+          }
+        }
+
+        if (places.length == $numHorses.value) {
+          window.clearInterval(intervalId);
+          intervalId = null;
+        }
+      }, RACE_INTERVAL);
+    });
+
+    function finishHorse(horse) {
+      places.push(horse);
+      horse.$place.innerText = places.length;
+      if (places.length === 1) {
+        horse.$place.style.background = '#EE5';
+      } else if (places.length === 2) {
+        horse.$place.style.background = '#DDE';
+      } else if (places.length === 3) {
+        horse.$place.style.background = '#BA6';
+      }
+      console.log('horse #' + horse.horseNumber + ' (bracket #' + horse.bracketNumber + ') finishes');
     }
 
     // init
