@@ -131,9 +131,17 @@
     const MIN_HORSES = 1;
     const MAX_HORSES = 16;
     const BRACKET_SIZE = 2;
-    const MAX_BRACKETS = MAX_HORSES / BRACKET_SIZE;
+    const NUM_BRACKETS = MAX_HORSES / BRACKET_SIZE;
     const RACE_INTERVAL = 1000 / 30; // fps
     const SPEED = 3;
+
+    const COLOURS = {
+      GOLD: '#EE5',
+      SILVER: '#DDE',
+      BRONZE: '#BA6',
+      WIN: '#6F6',
+      DEFAULT: '#FFF',
+    };
 
     var $track = document.querySelector('#track');
     var $bracketHeader = document.querySelector('#bracket_header');
@@ -162,7 +170,7 @@
       makeBrackets(this.value);
       fillTrack();
 
-      if (this.value <= MAX_BRACKETS) {
+      if (this.value <= NUM_BRACKETS) {
         $bracketHeader.style.display = 'none';
         document.querySelectorAll('.bracket').forEach(function ($bracket) {
           $bracket.style.display = 'none';
@@ -175,7 +183,7 @@
     });
 
     function clearTrack() {
-      for (var i = 0; i < MAX_BRACKETS; i++) {
+      for (var i = 0; i < NUM_BRACKETS; i++) {
         brackets[i] = [];
       }
 
@@ -187,7 +195,7 @@
       console.log('makeBrackets');
 
       for (var i = 1; i <= numHorses; i++) {
-        bracket = ((MAX_BRACKETS * 2) - i) % MAX_BRACKETS;
+        bracket = ((NUM_BRACKETS * 2) - i) % NUM_BRACKETS;
 
         var $lane = document.createElement('tr');
         $lane.className = 'js-lane';
@@ -195,7 +203,6 @@
         var $horseNumber = document.createElement('td');
         $lane.appendChild($horseNumber);
 
-        // $horse.className = 'js-horse-' + i;
         var $horseHolder = document.createElement('td');
         var $horse = document.createElement('div');
         $horse.innerText = '🐴';
@@ -243,8 +250,8 @@
     }
 
     function adjustBets(numHorses) {
-      disableInputs($wakutan, numHorses <= MAX_BRACKETS);
-      disableInputs($wakufuku, numHorses <= MAX_BRACKETS);
+      disableInputs($wakutan, numHorses <= NUM_BRACKETS);
+      disableInputs($wakufuku, numHorses <= NUM_BRACKETS);
       disableInputs($fukushou, numHorses < 5);
       disableInputs($wide, numHorses < 4);
       disableInputs($umarentan, numHorses < 4);
@@ -270,7 +277,7 @@
         for (var j = 0; j < brackets[i].length; j++) {
           brackets[i][j].$horse.style.width = 0;
           brackets[i][j].$place.innerText = '';
-          brackets[i][j].$place.style.background = '#FFF';
+          brackets[i][j].$place.style.background = COLOURS.DEFAULT;
         }
       }
       places = [];
@@ -304,11 +311,11 @@
       horse.$place.innerText = places.length;
 
       if (places.length === 1) {
-        horse.$place.style.background = '#EE5';
+        horse.$place.style.background = COLOURS.GOLD;
       } else if (places.length === 2) {
-        horse.$place.style.background = '#DDE';
+        horse.$place.style.background = COLOURS.SILVER;
       } else if (places.length === 3) {
-        horse.$place.style.background = '#BA6';
+        horse.$place.style.background = COLOURS.BRONZE;
       }
 
       console.log('horse #' + horse.horseNumber + ' (bracket #' + horse.bracketNumber + ') finishes');
@@ -320,23 +327,27 @@
       var p2 = places[1];
       var p3 = places[2];
 
+      // horse is 1st
       var b1 = parseInt($tanshou[0].value);
       checkWin($tanshou, done && !$tanshou[0].disabled && (
         b1 === p1.horseNumber
       ));
 
+      // horse is in top 3 (top 2 if < 8 horses)
       var b1 = $fukushou[0].value;
       checkWin($fukushou, done && !$fukushou[0].disabled && (
           b1 === p1.horseNumber
           || b1 === p2.horseNumber
-          || ($numHorses.value > MAX_BRACKETS && b1 === p3.horseNumber)
+          || ($numHorses.value > NUM_BRACKETS && b1 === p3.horseNumber)
       ));
 
+      // bracket's horse is 1st
       var b1 = parseInt($wakutan[0].value);
       checkWin($wakutan, done && !$wakutan[0].disabled && (
         b1 === p1.bracketNumber
       ));
 
+      // 2 brackets' horses are in top 2, any order
       var b1 = parseInt($wakufuku[0].value);
       var b2 = parseInt($wakufuku[1].value);
       checkWin($wakufuku, done && !$wakufuku[0].disabled && (
@@ -344,12 +355,14 @@
         || (b1 === p2.bracketNumber && b2 === p1.bracketNumber)
       ));
 
+      // 2 horses are in top 2, in order
       var b1 = parseInt($umatan[0].value);
       var b2 = parseInt($umatan[1].value);
       checkWin($umatan, done && !$umatan[0].disabled && (
         b1 === p1.horseNumber && b2 === p2.horseNumber
       ));
 
+      // 2 horses are in top 2, any order
       var b1 = parseInt($umafuku[0].value);
       var b2 = parseInt($umafuku[1].value);
       checkWin($umafuku, done && !$umafuku[0].disabled && (
@@ -357,6 +370,7 @@
         || (b1 === p2.horseNumber && b2 === p1.horseNumber)
       ));
 
+      // 2 horses are in top 3, any order
       var b1 = parseInt($wide[0].value);
       var b2 = parseInt($wide[1].value);
       checkWin($wide, done && !$wide[0].disabled && (
@@ -364,6 +378,7 @@
         && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
       ));
 
+      // 3 horses horses are in top 3, in order
       var b1 = parseInt($umarentan[0].value);
       var b2 = parseInt($umarentan[1].value);
       var b3 = parseInt($umarentan[2].value);
@@ -371,6 +386,7 @@
         b1 === p1.horseNumber && b2 === p2.horseNumber && b3 === p3.horseNumber
       ));
 
+      // 3 horses are in top 3, any order
       var b1 = parseInt($sanrenfuku[0]);
       var b2 = parseInt($sanrenfuku[1]);
       var b3 = parseInt($sanrenfuku[2]);
@@ -382,7 +398,7 @@
     }
 
     function checkWin($bet, win) {
-      $bet[0].parentElement.style.background = win ? '#6F6' : '#FFF';
+      $bet[0].parentElement.style.background = win ? COLOURS.WIN : COLOURS.DEFAULT;
     }
 
     // init
