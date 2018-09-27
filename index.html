@@ -143,24 +143,24 @@
       DEFAULT: '#FFF',
     };
 
-    var $track = document.querySelector('#track');
-    var $bracketHeader = document.querySelector('#bracket_header');
-    var $numHorses = document.querySelector('#num_horses');
-    var $start = document.querySelector('#start');
-    var brackets = [];
+    const $track = document.querySelector('#track');
+    const $bracketHeader = document.querySelector('#bracket_header');
+    const $numHorses = document.querySelector('#num_horses');
+    const $start = document.querySelector('#start');
+    const brackets = [];
+
+    const $tanshou = document.querySelectorAll('#bet_tanshou input');
+    const $fukushou = document.querySelectorAll('#bet_fukushou input');
+    const $wakutan = document.querySelectorAll('#bet_wakutan input');
+    const $wakufuku = document.querySelectorAll('#bet_wakufuku input');
+    const $umatan = document.querySelectorAll('#bet_umatan input');
+    const $umafuku = document.querySelectorAll('#bet_umafuku input');
+    const $wide = document.querySelectorAll('#bet_wide input');
+    const $umarentan = document.querySelectorAll('#bet_umarentan input');
+    const $sanrenfuku = document.querySelectorAll('#bet_sanrenfuku input');
 
     var intervalId = null;
     var places = [];
-
-    var $tanshou = document.querySelector('#bet_tanshou').querySelectorAll('input');
-    var $fukushou = document.querySelector('#bet_fukushou').querySelectorAll('input');
-    var $wakutan = document.querySelector('#bet_wakutan').querySelectorAll('input');
-    var $wakufuku = document.querySelector('#bet_wakufuku').querySelectorAll('input');
-    var $umatan = document.querySelector('#bet_umatan').querySelectorAll('input');
-    var $umafuku = document.querySelector('#bet_umafuku').querySelectorAll('input');
-    var $wide = document.querySelector('#bet_wide').querySelectorAll('input');
-    var $umarentan = document.querySelector('#bet_umarentan').querySelectorAll('input');
-    var $sanrenfuku = document.querySelector('#bet_sanrenfuku').querySelectorAll('input');
 
     $numHorses.addEventListener('change', function () {
       console.log('onChange');
@@ -172,7 +172,7 @@
 
       if (this.value <= NUM_BRACKETS) {
         $bracketHeader.style.display = 'none';
-        document.querySelectorAll('.bracket').forEach(function ($bracket) {
+        document.querySelectorAll('.js-bracket').forEach(function ($bracket) {
           $bracket.style.display = 'none';
         });
       } else {
@@ -197,20 +197,20 @@
       for (var i = 1; i <= numHorses; i++) {
         bracket = ((NUM_BRACKETS * 2) - i) % NUM_BRACKETS;
 
-        var $lane = document.createElement('tr');
+        const $lane = document.createElement('tr');
         $lane.className = 'js-lane';
 
-        var $horseNumber = document.createElement('td');
+        const $horseNumber = document.createElement('td');
         $lane.appendChild($horseNumber);
 
-        var $horseHolder = document.createElement('td');
-        var $horse = document.createElement('div');
+        const $horseHolder = document.createElement('td');
+        const $horse = document.createElement('div');
         $horse.innerText = '🐴';
         $horse.className = 'horse';
         $horseHolder.appendChild($horse);
         $lane.appendChild($horseHolder);
 
-        var $place = document.createElement('td');
+        const $place = document.createElement('td');
         $lane.appendChild($place);
 
         brackets[bracket].push({
@@ -231,10 +231,10 @@
       for (var i = 0; i < brackets.length; i++) {
         if (brackets[i].length === 0) continue;
 
-        var bracketNumber = i + 1;
+        const bracketNumber = i + 1;
 
-        var $bracketNumber = document.createElement('td');
-        $bracketNumber.className = 'bracket bracket-' + (bracketNumber);
+        const $bracketNumber = document.createElement('td');
+        $bracketNumber.className = 'js-bracket bracket-' + bracketNumber;
         $bracketNumber.innerText = bracketNumber;
         $bracketNumber.rowSpan = brackets[i].length;
         brackets[i][0].$html.insertBefore($bracketNumber, brackets[i][0].$horseNumber);
@@ -322,10 +322,10 @@
     }
 
     function checkBets() {
-      var done = places.length > 0;
-      var p1 = places[0];
-      var p2 = places[1];
-      var p3 = places[2];
+      const done = places.length > 0;
+      const p1 = places[0];
+      const p2 = places[1];
+      const p3 = places[2];
 
       // horse is 1st
       var b1 = parseInt($tanshou[0].value);
@@ -334,7 +334,7 @@
       ));
 
       // horse is in top 3 (top 2 if < 8 horses)
-      var b1 = $fukushou[0].value;
+      var b1 = parseInt($fukushou[0].value);
       checkWin($fukushou, done && !$fukushou[0].disabled && (
           b1 === p1.horseNumber
           || b1 === p2.horseNumber
@@ -387,9 +387,9 @@
       ));
 
       // 3 horses are in top 3, any order
-      var b1 = parseInt($sanrenfuku[0]);
-      var b2 = parseInt($sanrenfuku[1]);
-      var b3 = parseInt($sanrenfuku[2]);
+      var b1 = parseInt($sanrenfuku[0].value);
+      var b2 = parseInt($sanrenfuku[1].value);
+      var b3 = parseInt($sanrenfuku[2].value);
       checkWin($sanrenfuku, done && !$sanrenfuku[0].disabled && (
         (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
         && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
