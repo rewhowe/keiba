@@ -159,8 +159,8 @@
     const $umarentan = document.querySelectorAll('#bet_umarentan input');
     const $sanrenfuku = document.querySelectorAll('#bet_sanrenfuku input');
 
-    var intervalId = null;
-    var places = [];
+    let intervalId = null;
+    let places = [];
 
     $numHorses.addEventListener('change', function () {
       console.log('onChange');
@@ -183,18 +183,18 @@
     });
 
     function clearTrack() {
-      for (var i = 0; i < NUM_BRACKETS; i++) {
+      for (let i = 0; i < NUM_BRACKETS; i++) {
         brackets[i] = [];
       }
 
-      var $lane = undefined;
+      let $lane = undefined;
       while ($lane = document.querySelector('.js-lane')) $lane.remove();
     }
 
     function makeBrackets(numHorses) {
       console.log('makeBrackets');
 
-      for (var i = 1; i <= numHorses; i++) {
+      for (let i = 1; i <= numHorses; i++) {
         bracket = ((NUM_BRACKETS * 2) - i) % NUM_BRACKETS;
 
         const $lane = document.createElement('tr');
@@ -227,8 +227,8 @@
     function fillTrack() {
       console.log('fillTrack');
 
-      var horseNumber = 1;
-      for (var i = 0; i < brackets.length; i++) {
+      let horseNumber = 1;
+      for (let i = 0; i < brackets.length; i++) {
         if (brackets[i].length === 0) continue;
 
         const bracketNumber = i + 1;
@@ -239,7 +239,7 @@
         $bracketNumber.rowSpan = brackets[i].length;
         brackets[i][0].$html.insertBefore($bracketNumber, brackets[i][0].$horseNumber);
 
-        for (var j = 0; j < brackets[i].length; j++) {
+        for (let j = 0; j < brackets[i].length; j++) {
           brackets[i][j].bracketNumber = bracketNumber;
           brackets[i][j].horseNumber = horseNumber
           brackets[i][j].$horseNumber.innerText = horseNumber;
@@ -273,8 +273,8 @@
       console.log('start race with ' + $numHorses.value + ' horses');
 
       // reset
-      for (var i = 0; i < brackets.length; i++) {
-        for (var j = 0; j < brackets[i].length; j++) {
+      for (let i = 0; i < brackets.length; i++) {
+        for (let j = 0; j < brackets[i].length; j++) {
           brackets[i][j].$horse.style.width = 0;
           brackets[i][j].$place.innerText = '';
           brackets[i][j].$place.style.background = COLOURS.DEFAULT;
@@ -284,9 +284,9 @@
       checkBets();
 
       intervalId = window.setInterval(function () {
-        for (var i = 0; i < brackets.length; i++) {
-          for (var j = 0; j < brackets[i].length; j++) {
-            var progress = parseInt(brackets[i][j].$horse.style.width) || 0;
+        for (let i = 0; i < brackets.length; i++) {
+          for (let j = 0; j < brackets[i].length; j++) {
+            let progress = parseInt(brackets[i][j].$horse.style.width) || 0;
 
             if (progress >= 100) continue;
 
@@ -327,14 +327,18 @@
       const p2 = places[1];
       const p3 = places[2];
 
+      let b1 = 0;
+      let b2 = 0;
+      let b3 = 0;
+
       // horse is 1st
-      var b1 = parseInt($tanshou[0].value);
+      b1 = parseInt($tanshou[0].value);
       checkWin($tanshou, done && !$tanshou[0].disabled && (
         b1 === p1.horseNumber
       ));
 
       // horse is in top 3 (top 2 if < 8 horses)
-      var b1 = parseInt($fukushou[0].value);
+      b1 = parseInt($fukushou[0].value);
       checkWin($fukushou, done && !$fukushou[0].disabled && (
           b1 === p1.horseNumber
           || b1 === p2.horseNumber
@@ -342,54 +346,54 @@
       ));
 
       // bracket's horse is 1st
-      var b1 = parseInt($wakutan[0].value);
+      b1 = parseInt($wakutan[0].value);
       checkWin($wakutan, done && !$wakutan[0].disabled && (
         b1 === p1.bracketNumber
       ));
 
       // 2 brackets' horses are in top 2, any order
-      var b1 = parseInt($wakufuku[0].value);
-      var b2 = parseInt($wakufuku[1].value);
+      b1 = parseInt($wakufuku[0].value);
+      b2 = parseInt($wakufuku[1].value);
       checkWin($wakufuku, done && !$wakufuku[0].disabled && (
         (b1 === p1.bracketNumber && b2 === p2.bracketNumber)
         || (b1 === p2.bracketNumber && b2 === p1.bracketNumber)
       ));
 
       // 2 horses are in top 2, in order
-      var b1 = parseInt($umatan[0].value);
-      var b2 = parseInt($umatan[1].value);
+      b1 = parseInt($umatan[0].value);
+      b2 = parseInt($umatan[1].value);
       checkWin($umatan, done && !$umatan[0].disabled && (
         b1 === p1.horseNumber && b2 === p2.horseNumber
       ));
 
       // 2 horses are in top 2, any order
-      var b1 = parseInt($umafuku[0].value);
-      var b2 = parseInt($umafuku[1].value);
+      b1 = parseInt($umafuku[0].value);
+      b2 = parseInt($umafuku[1].value);
       checkWin($umafuku, done && !$umafuku[0].disabled && (
         (b1 === p1.horseNumber && b2 === p2.horseNumber)
         || (b1 === p2.horseNumber && b2 === p1.horseNumber)
       ));
 
       // 2 horses are in top 3, any order
-      var b1 = parseInt($wide[0].value);
-      var b2 = parseInt($wide[1].value);
+      b1 = parseInt($wide[0].value);
+      b2 = parseInt($wide[1].value);
       checkWin($wide, done && !$wide[0].disabled && (
         (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
         && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
       ));
 
       // 3 horses horses are in top 3, in order
-      var b1 = parseInt($umarentan[0].value);
-      var b2 = parseInt($umarentan[1].value);
-      var b3 = parseInt($umarentan[2].value);
+      b1 = parseInt($umarentan[0].value);
+      b2 = parseInt($umarentan[1].value);
+      b3 = parseInt($umarentan[2].value);
       checkWin($umarentan, done && !$umarentan[0].disabled && (
         b1 === p1.horseNumber && b2 === p2.horseNumber && b3 === p3.horseNumber
       ));
 
       // 3 horses are in top 3, any order
-      var b1 = parseInt($sanrenfuku[0].value);
-      var b2 = parseInt($sanrenfuku[1].value);
-      var b3 = parseInt($sanrenfuku[2].value);
+      b1 = parseInt($sanrenfuku[0].value);
+      b2 = parseInt($sanrenfuku[1].value);
+      b3 = parseInt($sanrenfuku[2].value);
       checkWin($sanrenfuku, done && !$sanrenfuku[0].disabled && (
         (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
         && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
@@ -403,7 +407,7 @@
 
     // init
     $numHorses.value = MAX_HORSES;
-    var event = document.createEvent('HTMLEvents');
+    let event = document.createEvent('HTMLEvents');
     event.initEvent('change', true, false);
     $numHorses.dispatchEvent(event);
   </script>
