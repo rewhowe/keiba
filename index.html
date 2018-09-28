@@ -37,15 +37,8 @@
           </td>
           <td class="desc">Bet which horse will place top 3 (top 2 if there are &lt; 8 horses)</td>
         </tr>
-        <tr id="bet_wakutan">
-          <td class="bet">枠単(わくたん - Bracket Exacta)</td>
-          <td class="options">
-            <input></input>
-          </td>
-          <td class="desc">Bet which bracket's horse will place 1st</td>
-        </tr>
         <tr id="bet_wakufuku">
-          <td class="bet">枠複(わくふく - Quinella)</td>
+          <td class="bet">枠複(わくふく - Bracket Quinella)</td>
           <td class="options">
             <input></input> ― <input></input>
           </td>
@@ -53,6 +46,13 @@
             Bet which brackets' horses will place top 2, in any order<br>
             Also called 枠連(わくれん)
           </td>
+        </tr>
+        <tr id="bet_wakutan">
+          <td class="bet">枠単(わくたん - Bracket Exacta)</td>
+          <td class="options">
+            <input></input> → <input></input>
+          </td>
+          <td class="desc">Bet which brackets' horses will place top 2, in order</td>
         </tr>
         <tr id="bet_umafuku">
           <td class="bet">馬複(うまふく - Quinella)</td>
@@ -78,19 +78,19 @@
           </td>
           <td class="desc">Bet which 2 horses will place top 3, in any order</td>
         </tr>
-        <tr id="bet_umarentan">
-          <td class="bet">3連単(さんれんたん - Trifecta)</td>
-          <td class="options">
-            <input></input> → <input></input> → <input></input>
-          </td>
-          <td class="desc">Bet which 3 horses will place top 3, in order (this is the most difficult)</td>
-        </tr>
         <tr id="bet_sanrenfuku">
           <td class="bet">3連複(さんれんふく - Trio)</td>
           <td class="options">
             <input></input> ― <input></input> ― <input></input>
           </td>
           <td class="desc">Bet which 3 horses will place top 3, in any order</td>
+        </tr>
+        <tr id="bet_umarentan">
+          <td class="bet">3連単(さんれんたん - Trifecta)</td>
+          <td class="options">
+            <input></input> → <input></input> → <input></input>
+          </td>
+          <td class="desc">Bet which 3 horses will place top 3, in order (this is the most difficult)</td>
         </tr>
       </table>
     </div>
@@ -151,13 +151,13 @@
 
     const $tanshou = document.querySelectorAll('#bet_tanshou input');
     const $fukushou = document.querySelectorAll('#bet_fukushou input');
-    const $wakutan = document.querySelectorAll('#bet_wakutan input');
     const $wakufuku = document.querySelectorAll('#bet_wakufuku input');
-    const $umatan = document.querySelectorAll('#bet_umatan input');
+    const $wakutan = document.querySelectorAll('#bet_wakutan input');
     const $umafuku = document.querySelectorAll('#bet_umafuku input');
+    const $umatan = document.querySelectorAll('#bet_umatan input');
     const $wide = document.querySelectorAll('#bet_wide input');
-    const $umarentan = document.querySelectorAll('#bet_umarentan input');
     const $sanrenfuku = document.querySelectorAll('#bet_sanrenfuku input');
+    const $umarentan = document.querySelectorAll('#bet_umarentan input');
 
     let intervalId = null;
     let places = [];
@@ -345,12 +345,6 @@
           || ($numHorses.value > NUM_BRACKETS && b1 === p3.horseNumber)
       ));
 
-      // bracket's horse is 1st
-      b1 = parseInt($wakutan[0].value);
-      checkWin($wakutan, done && !$wakutan[0].disabled && (
-        b1 === p1.bracketNumber
-      ));
-
       // 2 brackets' horses are in top 2, any order
       b1 = parseInt($wakufuku[0].value);
       b2 = parseInt($wakufuku[1].value);
@@ -359,11 +353,11 @@
         || (b1 === p2.bracketNumber && b2 === p1.bracketNumber)
       ));
 
-      // 2 horses are in top 2, in order
-      b1 = parseInt($umatan[0].value);
-      b2 = parseInt($umatan[1].value);
-      checkWin($umatan, done && !$umatan[0].disabled && (
-        b1 === p1.horseNumber && b2 === p2.horseNumber
+      // 2 brackets' horse are in top 2, in order
+      b1 = parseInt($wakutan[0].value);
+      b2 = parseInt($wakutan[1].value);
+      checkWin($wakutan, done && !$wakutan[0].disabled && (
+        b1 === p1.bracketNumber && b2 === p2.bracketNumber
       ));
 
       // 2 horses are in top 2, any order
@@ -374,20 +368,19 @@
         || (b1 === p2.horseNumber && b2 === p1.horseNumber)
       ));
 
+      // 2 horses are in top 2, in order
+      b1 = parseInt($umatan[0].value);
+      b2 = parseInt($umatan[1].value);
+      checkWin($umatan, done && !$umatan[0].disabled && (
+        b1 === p1.horseNumber && b2 === p2.horseNumber
+      ));
+
       // 2 horses are in top 3, any order
       b1 = parseInt($wide[0].value);
       b2 = parseInt($wide[1].value);
       checkWin($wide, done && !$wide[0].disabled && (
         (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
         && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
-      ));
-
-      // 3 horses horses are in top 3, in order
-      b1 = parseInt($umarentan[0].value);
-      b2 = parseInt($umarentan[1].value);
-      b3 = parseInt($umarentan[2].value);
-      checkWin($umarentan, done && !$umarentan[0].disabled && (
-        b1 === p1.horseNumber && b2 === p2.horseNumber && b3 === p3.horseNumber
       ));
 
       // 3 horses are in top 3, any order
@@ -398,6 +391,14 @@
         (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
         && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
         && (b3 === p1.horseNumber || b3 === p2.horseNumber || b3 === p3.horseNumber)
+      ));
+
+      // 3 horses horses are in top 3, in order
+      b1 = parseInt($umarentan[0].value);
+      b2 = parseInt($umarentan[1].value);
+      b3 = parseInt($umarentan[2].value);
+      checkWin($umarentan, done && !$umarentan[0].disabled && (
+        b1 === p1.horseNumber && b2 === p2.horseNumber && b3 === p3.horseNumber
       ));
     }
 
