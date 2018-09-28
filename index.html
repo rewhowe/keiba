@@ -5,23 +5,33 @@
     <div id="race_container">
       <table id="track">
         <tr>
-          <th id="bracket_header" class="bracket-header">枠番</th>
-          <th class="horse-number">馬番</th>
-          <th class="lane"></th>
-          <th class="place">着</th>
+          <th id="bracket_header" class="bracket-header">
+            枠番<br>
+            <span class="text-small">Bracket #</span>
+          </th>
+          <th class="horse-number">
+            馬番<br>
+            <span class="text-small">Horse #</span>
+          </th>
+          <th class="lane">
+            <span class="start text-small">Start</span>
+            <span class="finish text-small">Finish</span>
+          </th>
+          <th class="place">
+            着<br>
+            <span class="text-small">Place</span>
+          </th>
         <tr>
       </table>
+    </div>
+    <div id="controls">
+      Number of Horses:
+      <input id="num_horses">
+      <button id="start">Start</button>
     </div>
     <div id="settings" cellspacing="0">
       <table>
         <tr>
-          <td>Number of Horses:</td>
-          <td>
-            <input id="num_horses">
-          </td>
-          <td>
-            <button id="start">Start</button>
-          </td>
         </tr>
         <tr id="bet_tanshou">
           <td class="bet">単勝(たんしょう - Win)</td>
@@ -98,13 +108,18 @@
 
   <style>
     body { padding: 10px; }
-    #track,
     #track th,
-    #track td, { border: 1px solid #000; }
+    #track td,
+    #settings th,
+    #settings td { border: 1px solid #999; }
+
     #track { width: 50%; }
       #track .bracket-header,
       #track .horse-number,
-      #track .place { width: 5%; }
+      #track .place {
+        width: 5%;
+        white-space: nowrap;
+      }
       #track .lane { width: 85%; }
       #track .bracket-1 { background: #DDD; }
       #track .bracket-2 { background: #666; }
@@ -119,12 +134,14 @@
         text-align: right;
       }
 
+    #controls { padding-top: 20px; }
+
     #settings { margin-top: 10px; }
-      #settings th, td {
-        border: 1px solid #999;
-        padding: 3px;
-      }
       #settings input:disabled { background: #EEE; }
+
+    .text-small { font-size: 80%; }
+    .start { float: left; }
+    .finish { float: right; }
   </style>
 
   <script>
