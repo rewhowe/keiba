@@ -26,7 +26,7 @@
     </div>
     <div id="controls">
       Number of Horses:
-      <input type="number" id="num_horses">
+      <input id="num_horses">
       <button id="start">Start</button>
     </div>
     <div id="settings" cellspacing="0">
@@ -40,7 +40,7 @@
         <tr id="bet_tanshou">
           <td class="bet">単勝(たんしょう - Win)</td>
           <td class="options">
-            <input type="number"></input>
+            <input></input>
           </td>
           <td id="p_tanshou" class="probability"></td>
           <td class="desc">Bet which horse will place 1st</td>
@@ -48,7 +48,7 @@
         <tr id="bet_fukushou">
           <td class="bet">複勝(ふくしょう - Places)</td>
           <td class="options">
-            <input type="number"></input>
+            <input></input>
           </td>
           <td id="p_fukushou" class="probability"></td>
           <td class="desc">Bet which horse will place top 3 (top 2 if there are &lt; 8 horses)</td>
@@ -56,7 +56,7 @@
         <tr id="bet_wakufuku">
           <td class="bet">枠複(わくふく - Bracket Quinella)</td>
           <td class="options">
-            <input type="number"></input> ― <input type="number"></input>
+            <input></input> ― <input></input>
           </td>
           <td id="p_wakufuku" class="probability"></td>
           <td class="desc">
@@ -67,7 +67,7 @@
         <tr id="bet_wakutan">
           <td class="bet">枠単(わくたん - Bracket Exacta)</td>
           <td class="options">
-            <input type="number"></input> → <input type="number"></input>
+            <input></input> → <input></input>
           </td>
           <td id="p_wakutan" class="probability"></td>
           <td class="desc">Bet which brackets' horses will place top 2, in order</td>
@@ -75,7 +75,7 @@
         <tr id="bet_umafuku">
           <td class="bet">馬複(うまふく - Quinella)</td>
           <td class="options">
-            <input type="number"></input> ― <input type="number"></input>
+            <input></input> ― <input></input>
           </td>
           <td id="p_umafuku" class="probability"></td>
           <td class="desc">
@@ -86,7 +86,7 @@
         <tr id="bet_umatan">
           <td class="bet">馬単(うまたん - Exacta)</td>
           <td class="options">
-            <input type="number"></input> → <input type="number"></input>
+            <input></input> → <input></input>
           </td>
           <td id="p_umatan" class="probability"></td>
           <td class="desc">Bet which 2 horses will place top 2, in order (difficult)</td>
@@ -94,7 +94,7 @@
         <tr id="bet_wide">
           <td class="bet">ワイド(Wide)</td>
           <td class="options">
-            <input type="number"></input> ― <input type="number"></input>
+            <input></input> ― <input></input>
           </td>
           <td id="p_wide" class="probability"></td>
           <td class="desc">Bet which 2 horses will place top 3, in any order</td>
@@ -102,7 +102,7 @@
         <tr id="bet_sanrenfuku">
           <td class="bet">3連複(さんれんふく - Trio)</td>
           <td class="options">
-            <input type="number"></input> ― <input type="number"></input> ― <input type="number"></input>
+            <input></input> ― <input></input> ― <input></input>
           </td>
           <td id="p_sanrenfuku" class="probability"></td>
           <td class="desc">Bet which 3 horses will place top 3, in any order</td>
@@ -110,7 +110,7 @@
         <tr id="bet_umarentan">
           <td class="bet">3連単(さんれんたん - Trifecta)</td>
           <td class="options">
-            <input type="number"></input> → <input type="number"></input> → <input type="number"></input>
+            <input></input> → <input></input> → <input></input>
           </td>
           <td id="p_umarentan" class="probability"></td>
           <td class="desc">
@@ -158,14 +158,7 @@
     .text-small { font-size: 80%; }
     .start { float: left; }
     .finish { float: right; }
-    .probability { width: 4em; }
-      .probability:after { content: '％'; }
-
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
+    .probability:after { content: '％'; }
   </style>
 
   <script>
@@ -188,50 +181,183 @@
     const $bracketHeader = document.querySelector('#bracket_header');
     const $numHorses = document.querySelector('#num_horses');
     const $start = document.querySelector('#start');
-    const $settings = document.querySelector('#settings');
     const brackets = [];
 
-    const tanshou = {
-      $inputs: document.querySelectorAll('#bet_tanshou input'),
-      $probability: document.querySelector('#p_tanshou'),
+    class Bet {
+      constructor(name, isValid, calculateProbability, checkWin) {
+        console.log(name);
+        const $settings = document.querySelector('#bet_' + name);
+        console.log($settings);
+        this.$inputs = $settings.querySelectorAll('input');
+        this.$probability = $settings.querySelector('#p_' + name);
+        this.isValid = isValid;
+        this.calculateProbability = calculateProbability;
+      }
+
+      update(numHorses) {
+        const shouldDisable = !this.isValid(numHorses);
+        this.$inputs.forEach(function ($input) {
+          $input.disabled = shouldDisable;
+        });
+        this.$probability.innerText = this.calculateProbability();
+      }
+
+      get disabled() {
+        $this.$inputs[0].disabled;
+      }
     };
-    const fukushou = {
-      $inputs: document.querySelectorAll('#bet_fukushou input'),
-      $probability: document.querySelector('#p_fukushou'),
-    };
-    const wakufuku = {
-      $inputs: document.querySelectorAll('#bet_wakufuku input'),
-      $probability: document.querySelector('#p_wakufuku'),
-    };
-    const wakutan = {
-      $inputs: document.querySelectorAll('#bet_wakutan input'),
-      $probability: document.querySelector('#p_wakutan'),
-    };
-    const umafuku = {
-      $inputs: document.querySelectorAll('#bet_umafuku input'),
-      $probability: document.querySelector('#p_umafuku'),
-    };
-    const umatan = {
-      $inputs: document.querySelectorAll('#bet_umatan input'),
-      $probability: document.querySelector('#p_umatan'),
-    };
-    const wide = {
-      $inputs: document.querySelectorAll('#bet_wide input'),
-      $probability: document.querySelector('#p_wide'),
-    };
-    const sanrenfuku = {
-      $inputs: document.querySelectorAll('#bet_sanrenfuku input'),
-      $probability: document.querySelector('#p_sanrenfuku'),
-    };
-    const umarentan = {
-      $inputs: document.querySelectorAll('#bet_umarentan input'),
-      $probability: document.querySelector('#p_umarentan'),
-    };
+
+    const tanshou = new Bet(
+      'tanshou',
+      function (numHorses) { return numHorses > 1; },
+      function () {
+        return 0;
+      },
+      function (places) { // horse is 1st
+        return !this.disabled && (
+          this.$inputs[0].value === places[0].horseNumber;
+        );
+      }
+    );
+    const fukushou = new Bet(
+      'fukushou',
+      function (numHorses) { return numHorses >= 5; },
+      function () {
+        return 0;
+      },
+      function (places) { // horse is in top 3 (top 2 if < 8 horses)
+        let b1 = this.$inputs[0].value;
+        return !this.disabled && (
+          b1 === places[0].horseNumber
+          || b1 === places[1].horseNumber
+          || ($numHorses.value > NUM_BRACKETS && b1 === places[2].horseNumber)
+        );
+      }
+    );
+      
+      b1 = parseInt($fukushou[0].value);
+      checkWin($fukushou, done && !$fukushou[0].disabled && (
+      ));
+
+      // 2 brackets' horses are in top 2, any order
+      b1 = parseInt($wakufuku[0].value);
+      b2 = parseInt($wakufuku[1].value);
+      checkWin($wakufuku, done && !$wakufuku[0].disabled && (
+        (b1 === p1.bracketNumber && b2 === p2.bracketNumber)
+        || (b1 === p2.bracketNumber && b2 === p1.bracketNumber)
+      ));
+
+      // 2 brackets' horse are in top 2, in order
+      b1 = parseInt($wakutan[0].value);
+      b2 = parseInt($wakutan[1].value);
+      checkWin($wakutan, done && !$wakutan[0].disabled && (
+        b1 === p1.bracketNumber && b2 === p2.bracketNumber
+      ));
+
+      // 2 horses are in top 2, any order
+      b1 = parseInt($umafuku[0].value);
+      b2 = parseInt($umafuku[1].value);
+      checkWin($umafuku, done && !$umafuku[0].disabled && (
+        (b1 === p1.horseNumber && b2 === p2.horseNumber)
+        || (b1 === p2.horseNumber && b2 === p1.horseNumber)
+      ));
+
+      // 2 horses are in top 2, in order
+      b1 = parseInt($umatan[0].value);
+      b2 = parseInt($umatan[1].value);
+      checkWin($umatan, done && !$umatan[0].disabled && (
+        b1 === p1.horseNumber && b2 === p2.horseNumber
+      ));
+
+      // 2 horses are in top 3, any order
+      b1 = parseInt($wide[0].value);
+      b2 = parseInt($wide[1].value);
+      checkWin($wide, done && !$wide[0].disabled && (
+        (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
+        && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
+      ));
+
+      // 3 horses are in top 3, any order
+      b1 = parseInt($sanrenfuku[0].value);
+      b2 = parseInt($sanrenfuku[1].value);
+      b3 = parseInt($sanrenfuku[2].value);
+      checkWin($sanrenfuku, done && !$sanrenfuku[0].disabled && (
+        (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
+        && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
+        && (b3 === p1.horseNumber || b3 === p2.horseNumber || b3 === p3.horseNumber)
+      ));
+
+      // 3 horses horses are in top 3, in order
+      b1 = parseInt($umarentan[0].value);
+      b2 = parseInt($umarentan[1].value);
+      b3 = parseInt($umarentan[2].value);
+      checkWin($umarentan, done && !$umarentan[0].disabled && (
+        b1 === p1.horseNumber && b2 === p2.horseNumber && b3 === p3.horseNumber
+      ));
+    const wakufuku = new Bet(
+      'wakufuku',
+      function (numHorses) { return numHorses > NUM_BRACKETS; },
+      function () {
+        return 0;
+      }
+    );
+    const wakutan = new Bet(
+      'wakutan',
+      function (numHorses) { return numHorses > NUM_BRACKETS; },
+      function () {
+        return 0;
+      }
+    );
+    const umafuku = new Bet(
+      'umafuku',
+      function (numHorses) { return numHorses >= 3; },
+      function () {
+        return 0;
+      }
+    );
+    const umatan = new Bet(
+      'umatan',
+      function (numHorses) { return numHorses >= 3; },
+      function () {
+        return 0;
+      }
+    );
+    const wide = new Bet(
+      'wide',
+      function (numHorses) { return numHorses >= 4; },
+      function () {
+        return 0;
+      }
+    );
+    const sanrenfuku = new Bet(
+      'sanrenfuku',
+      function (numHorses) { return numHorses >= 4; },
+      function () {
+        return 0;
+      }
+    );
+    const umarentan = new Bet(
+      'umarentan',
+      function (numHorses) { return numHorses >= 4; },
+      function () {
+        return 0;
+      }
+    );
+    // const $tanshou = document.querySelectorAll('#bet_tanshou input');
+    // const $fukushou = document.querySelectorAll('#bet_fukushou input');
+    // const $wakufuku = document.querySelectorAll('#bet_wakufuku input');
+    // const $wakutan = document.querySelectorAll('#bet_wakutan input');
+    // const $umafuku = document.querySelectorAll('#bet_umafuku input');
+    // const $umatan = document.querySelectorAll('#bet_umatan input');
+    // const $wide = document.querySelectorAll('#bet_wide input');
+    // const $sanrenfuku = document.querySelectorAll('#bet_sanrenfuku input');
+    // const $umarentan = document.querySelectorAll('#bet_umarentan input');
 
     let intervalId = null;
     let places = [];
 
     $numHorses.addEventListener('change', function () {
+      console.log('onChange');
       this.value = Math.min(MAX_HORSES, Math.max(MIN_HORSES, this.value)) || 1;
 
       clearTrack();
@@ -240,7 +366,9 @@
 
       if (this.value <= NUM_BRACKETS) {
         $bracketHeader.style.display = 'none';
-        document.querySelectorAll('.js-bracket').forEach($bracket => $bracket.style.display = 'none');
+        document.querySelectorAll('.js-bracket').forEach(function ($bracket) {
+          $bracket.style.display = 'none';
+        });
       } else {
         $bracketHeader.style.display = 'table-cell';
       }
@@ -253,10 +381,13 @@
         brackets[i] = [];
       }
 
-      document.querySelectorAll('.js-lane').forEach($lane => $lane.remove());
+      let $lane = undefined;
+      while ($lane = document.querySelector('.js-lane')) $lane.remove();
     }
 
     function makeBrackets(numHorses) {
+      console.log('makeBrackets');
+
       for (let i = 1; i <= numHorses; i++) {
         bracket = ((NUM_BRACKETS * 2) - i) % NUM_BRACKETS;
 
@@ -288,6 +419,8 @@
     }
 
     function fillTrack() {
+      console.log('fillTrack');
+
       let horseNumber = 1;
       for (let i = 0; i < brackets.length; i++) {
         if (brackets[i].length === 0) continue;
@@ -311,81 +444,32 @@
     }
 
     function adjustBets(numHorses) {
-      update(tanshou, parseInt(numHorses) === 1, function () {
-        if (1 <= input(tanshou, 0) && input(tanshou, 0) <= numHorses) {
-          return 1 / numHorses;
-        }
-        return 0;
-      });
-      update(fukushou, numHorses < 5, function () {
-        if (1 <= input(fukushou, 0) && input(fukushou, 0) <= numHorses) {
-          return (numHorses < NUM_BRACKETS ? 2 : 3) / numHorses;
-        }
-        return 0;
-      });
-      update(wakufuku, numHorses <= NUM_BRACKETS, function () {
-        let bracket1Length = (brackets[input(wakufuku, 0) - 1] || []).length;
-        let bracket2Length = (brackets[input(wakufuku, 1) - 1] || []).length;
-        return (bracket1Length * bracket2Length * 2) / (numHorses * (numHorses - 1));
-      });
-      update(wakutan, numHorses <= NUM_BRACKETS, function () {
-        let bracket1Length = (brackets[input(wakutan, 0) - 1] || []).length;
-        let bracket2Length = (brackets[input(wakutan, 1) - 1] || []).length;
-        return (bracket1Length * bracket2Length) / (numHorses * (numHorses - 1));
-      });
-      update(umafuku, numHorses < 3, function () {
-        if (1 <= input(umafuku, 0) && input(umafuku, 0) <= numHorses
-          && 1 <= input(umafuku, 1) && input(umafuku, 1) <= numHorses
-        ) {
-          return 2 / (numHorses * (numHorses - 1));
-        }
-        return 0;
-      });
-      update(umatan, numHorses < 3, function () {
-        if (1 <= input(umatan, 0) && input(umatan, 0) <= numHorses
-          && 1 <= input(umatan, 1) && input(umatan, 1) <= numHorses
-        ) {
-          return 1 / (numHorses * (numHorses - 1));
-        }
-        return 0;
-      });
-      update(wide, numHorses < 4, function () {
-        if (1 <= input(wide, 0) && input(wide, 0) <= numHorses
-          && 1 <= input(wide, 1) && input(wide, 1) <= numHorses
-        ) {
-          return 6 / (numHorses * (numHorses - 1));
-        }
-        return 0;
-      });
-      update(sanrenfuku, numHorses < 4, function () {
-        if (1 <= input(sanrenfuku, 0) && input(sanrenfuku, 0) <= numHorses
-          && 1 <= input(sanrenfuku, 1) && input(sanrenfuku, 1) <= numHorses
-          && 1 <= input(sanrenfuku, 2) && input(sanrenfuku, 2) <= numHorses
-        ) {
-          return 6 / (numHorses * (numHorses - 1) * (numHorses - 2));
-        }
-        return 0;
-      });
-      update(umarentan, numHorses < 4, function () {
-        if (1 <= input(umarentan, 0) && input(umarentan, 0) <= numHorses
-          && 1 <= input(umarentan, 1) && input(umarentan, 1) <= numHorses
-          && 1 <= input(umarentan, 2) && input(umarentan, 2) <= numHorses
-        ) {
-          return 1 / (numHorses * (numHorses - 1) * (numHorses - 2));
-        }
-        return 0;
-      });
+      tanshou.update(numHorses);
+      wakutan.update(numHorses);
+      wakufuku.update(numHorses);
+      fukushou.update(numHorses);
+      wide.update(numHorses);
+      umarentan.update(numHorses);
+      sanrenfuku.update(numHorses);
+      umafuku.update(numHorses);
+      umatan.update(numHorses);
+
+      // disableInputs($wakutan, numHorses <= NUM_BRACKETS);
+      // disableInputs($wakufuku, numHorses <= NUM_BRACKETS);
+      // disableInputs($fukushou, numHorses < 5);
+      // disableInputs($wide, numHorses < 4);
+      // disableInputs($umarentan, numHorses < 4);
+      // disableInputs($sanrenfuku, numHorses < 4);
+      // disableInputs($umafuku, numHorses < 3)
+      // disableInputs($umatan, numHorses < 3);
+      // disableInputs($tanshou, parseInt(numHorses) === 1);
     }
 
-    function update(bet, disabled, calculate) {
-      let hasInput = true;
-      bet.$inputs.forEach(function ($input) {
-        $input.disabled = disabled;
-        hasInput &= ($input.value != '');
-      });
-
-      bet.$probability.innerText = hasInput && !disabled ? Math.round(calculate() * 10000) / 100 : 0;
-    }
+    // function disableInputs($bet, disabled) {
+    //   $bet.forEach(function ($input) {
+    //     $input.disabled = disabled;
+    //   });
+    // }
 
     $start.addEventListener('click', function () {
       if (intervalId !== null) return;
@@ -441,7 +525,6 @@
       console.log('horse #' + horse.horseNumber + ' (bracket #' + horse.bracketNumber + ') finishes');
     }
 
-// TODO: check if done is req
     function checkBets() {
       const done = places.length > 0;
       const p1 = places[0];
@@ -453,89 +536,83 @@
       let b3 = 0;
 
       // horse is 1st
-      b1 = input(tanshou, 0);
-      checkWin(tanshou, done && !tanshou.$inputs[0].disabled && (
+      b1 = parseInt($tanshou[0].value);
+      checkWin($tanshou, done && !tanshou.disabled && (
         b1 === p1.horseNumber
       ));
 
       // horse is in top 3 (top 2 if < 8 horses)
-      b1 = input(fukushou, 0);
-      checkWin(fukushou, done && !fukushou.$inputs[0].disabled && (
+      b1 = parseInt($fukushou[0].value);
+      checkWin($fukushou, done && !$fukushou[0].disabled && (
           b1 === p1.horseNumber
           || b1 === p2.horseNumber
           || ($numHorses.value > NUM_BRACKETS && b1 === p3.horseNumber)
       ));
 
       // 2 brackets' horses are in top 2, any order
-      b1 = input(wakufuku, 0);
-      b2 = input(wakufuku, 1);
-      checkWin(wakufuku, done && !wakufuku.$inputs[0].disabled && (
+      b1 = parseInt($wakufuku[0].value);
+      b2 = parseInt($wakufuku[1].value);
+      checkWin($wakufuku, done && !$wakufuku[0].disabled && (
         (b1 === p1.bracketNumber && b2 === p2.bracketNumber)
         || (b1 === p2.bracketNumber && b2 === p1.bracketNumber)
       ));
 
       // 2 brackets' horse are in top 2, in order
-      b1 = input(wakutan, 0);
-      b2 = input(wakutan, 1);
-      checkWin(wakutan, done && !wakutan.$inputs[0].disabled && (
+      b1 = parseInt($wakutan[0].value);
+      b2 = parseInt($wakutan[1].value);
+      checkWin($wakutan, done && !$wakutan[0].disabled && (
         b1 === p1.bracketNumber && b2 === p2.bracketNumber
       ));
 
       // 2 horses are in top 2, any order
-      b1 = input(umafuku, 0);
-      b2 = input(umafuku, 1);
-      checkWin(umafuku, done && !umafuku.$inputs[0].disabled && (
+      b1 = parseInt($umafuku[0].value);
+      b2 = parseInt($umafuku[1].value);
+      checkWin($umafuku, done && !$umafuku[0].disabled && (
         (b1 === p1.horseNumber && b2 === p2.horseNumber)
         || (b1 === p2.horseNumber && b2 === p1.horseNumber)
       ));
 
       // 2 horses are in top 2, in order
-      b1 = input(umatan, 0);
-      b2 = input(umatan, 1);
-      checkWin(umatan, done && !umatan.$inputs[0].disabled && (
+      b1 = parseInt($umatan[0].value);
+      b2 = parseInt($umatan[1].value);
+      checkWin($umatan, done && !$umatan[0].disabled && (
         b1 === p1.horseNumber && b2 === p2.horseNumber
       ));
 
       // 2 horses are in top 3, any order
-      b1 = input(wide, 0);
-      b2 = input(wide, 1);
-      checkWin(wide, done && !wide.$inputs[0].disabled && (
+      b1 = parseInt($wide[0].value);
+      b2 = parseInt($wide[1].value);
+      checkWin($wide, done && !$wide[0].disabled && (
         (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
         && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
       ));
 
       // 3 horses are in top 3, any order
-      b1 = input(sanrenfuku, 0);
-      b2 = input(sanrenfuku, 1);
-      b3 = input(sanrenfuku, 2);
-      checkWin(sanrenfuku, done && !sanrenfuku.$inputs[0].disabled && (
+      b1 = parseInt($sanrenfuku[0].value);
+      b2 = parseInt($sanrenfuku[1].value);
+      b3 = parseInt($sanrenfuku[2].value);
+      checkWin($sanrenfuku, done && !$sanrenfuku[0].disabled && (
         (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
         && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
         && (b3 === p1.horseNumber || b3 === p2.horseNumber || b3 === p3.horseNumber)
       ));
 
       // 3 horses horses are in top 3, in order
-      b1 = input(umarentan, 0);
-      b2 = input(umarentan, 1);
-      b3 = input(umarentan, 2);
-      checkWin(umarentan, done && !umarentan.$inputs[0].disabled && (
+      b1 = parseInt($umarentan[0].value);
+      b2 = parseInt($umarentan[1].value);
+      b3 = parseInt($umarentan[2].value);
+      checkWin($umarentan, done && !$umarentan[0].disabled && (
         b1 === p1.horseNumber && b2 === p2.horseNumber && b3 === p3.horseNumber
       ));
     }
 
     function checkWin(bet, win) {
-      bet.$inputs[0].parentElement.style.background = win ? COLOURS.WIN : COLOURS.DEFAULT;
+      bet.values[0].parentElement.style.background = win ? COLOURS.WIN : COLOURS.DEFAULT;
     }
-
-    function input(bet, index) {
-      return parseInt(bet.$inputs[index].value);
-    }
-
-    $settings.addEventListener('change', () => adjustBets($numHorses.value));
 
     // init
     $numHorses.value = MAX_HORSES;
-    const event = document.createEvent('HTMLEvents');
+    let event = document.createEvent('HTMLEvents');
     event.initEvent('change', true, false);
     $numHorses.dispatchEvent(event);
   </script>
