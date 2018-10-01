@@ -193,6 +193,7 @@
     #settings { margin-top: 10px; }
       #settings th,
       #settings td { padding: 10px; }
+      #settings tr.win td { background: #6F6; }
       #settings input:disabled { background: #EEE; }
 
     .text-small { font-size: 80%; }
@@ -251,9 +252,10 @@
       GOLD: '#EE5',
       SILVER: '#DDE',
       BRONZE: '#BA6',
-      WIN: '#6F6',
       DEFAULT: '#FFF',
     };
+
+    const SORT_NUM = (a, b) => a - b;
 
     const $track = document.querySelector('#track');
     const $bracketHeader = document.querySelector('#bracket_header');
@@ -263,46 +265,55 @@
     const brackets = [];
 
     const tanshou = {
+      $row: document.querySelector('#bet_tanshou'),
       $inputs: document.querySelectorAll('#bet_tanshou input'),
       $probability: document.querySelector('#bet_tanshou .js-probability'),
       $win: document.querySelector('#bet_tanshou .js-win-choice'),
     };
     const fukushou = {
+      $row: document.querySelector('#bet_fukushou'),
       $inputs: document.querySelectorAll('#bet_fukushou input'),
       $probability: document.querySelector('#bet_fukushou .js-probability'),
       $win: document.querySelector('#bet_fukushou .js-win-choice'),
     };
     const wakufuku = {
+      $row: document.querySelector('#bet_wakufuku'),
       $inputs: document.querySelectorAll('#bet_wakufuku input'),
       $probability: document.querySelector('#bet_wakufuku .js-probability'),
       $win: document.querySelector('#bet_wakufuku .js-win-choice'),
     };
     const wakutan = {
+      $row: document.querySelector('#bet_wakutan'),
       $inputs: document.querySelectorAll('#bet_wakutan input'),
       $probability: document.querySelector('#bet_wakutan .js-probability'),
       $win: document.querySelector('#bet_wakutan .js-win-choice'),
     };
     const umafuku = {
+      $row: document.querySelector('#bet_umafuku'),
       $inputs: document.querySelectorAll('#bet_umafuku input'),
       $probability: document.querySelector('#bet_umafuku .js-probability'),
       $win: document.querySelector('#bet_umafuku .js-win-choice'),
     };
     const umatan = {
+      $row: document.querySelector('#bet_umatan'),
       $inputs: document.querySelectorAll('#bet_umatan input'),
       $probability: document.querySelector('#bet_umatan .js-probability'),
       $win: document.querySelector('#bet_umatan .js-win-choice'),
     };
     const wide = {
+      $row: document.querySelector('#bet_wide'),
       $inputs: document.querySelectorAll('#bet_wide input'),
       $probability: document.querySelector('#bet_wide .js-probability'),
       $win: document.querySelector('#bet_wide .js-win-choice'),
     };
     const sanrenfuku = {
+      $row: document.querySelector('#bet_sanrenfuku'),
       $inputs: document.querySelectorAll('#bet_sanrenfuku input'),
       $probability: document.querySelector('#bet_sanrenfuku .js-probability'),
       $win: document.querySelector('#bet_sanrenfuku .js-win-choice'),
     };
     const umarentan = {
+      $row: document.querySelector('#bet_umarentan'),
       $inputs: document.querySelectorAll('#bet_umarentan input'),
       $probability: document.querySelector('#bet_umarentan .js-probability'),
       $win: document.querySelector('#bet_umarentan .js-win-choice'),
@@ -481,7 +492,7 @@
         }
       }
       places = [];
-      checkBets();
+      clearBets();
 
       intervalId = window.setInterval(function () {
         for (let i = 0; i < brackets.length; i++) {
@@ -521,14 +532,25 @@
       console.log('horse #' + horse.horseNumber + ' (bracket #' + horse.bracketNumber + ') finishes');
     }
 
-    function checkBets() {
-      const p1 = places[0];
-      const p2 = places[1];
-      const p3 = places[2];
+    function clearBets() {
+      [
+        tanshou,
+        fukushou,
+        wakufuku,
+        wakutan,
+        umafuku,
+        umatan,
+        wide,
+        sanrenfuku,
+        umarentan,
+      ].forEach(function (bet) {
+        bet.$row.className = '';
+        bet.$win.innerText = '';
+      });
+    }
 
-      let b1 = 0;
-      let b2 = 0;
-      let b3 = 0;
+    function checkBets() {
+      if (!places[0]) return;
 
       let winChoices = [];
 
@@ -538,10 +560,6 @@
       ];
       checkWin(tanshou, winChoices);
       showWin(tanshou, winChoices);
-//      b1 = input(tanshou, 0);
-//      checkWin(tanshou, done && !tanshou.$inputs[0].disabled && (
-//        b1 === p1.horseNumber
-//      ));
 
       if (!places[1]) return;
 
@@ -553,26 +571,14 @@
       if ($numHorses.value > NUM_BRACKETS) winChoices.push(places[2].horseNumber.toString());
       checkWin(fukushou, winChoices);
       showWin(fukushou, winChoices)
-//      b1 = input(fukushou, 0);
-//      checkWin(fukushou, done && !fukushou.$inputs[0].disabled && (
-//          b1 === p1.horseNumber
-//          || b1 === p2.horseNumber
-//          || ($numHorses.value > NUM_BRACKETS && b1 === p3.horseNumber)
-//      ));
 
       // 2 brackets' horses are in top 2, any order
       winChoices = [
-        [places[0].bracketNumber, places[1].bracketNumber].join('―'),
-        [places[1].bracketNumber, places[0].bracketNumber].join('―'),
+        [places[0].bracketNumber, places[1].bracketNumber].sort(SORT_NUM).join('―'),
+        [places[1].bracketNumber, places[0].bracketNumber].sort(SORT_NUM).join('―'),
       ];
       checkWin(wakufuku, winChoices, '―');
       showWin(wakufuku, winChoices);
-//      b1 = input(wakufuku, 0);
-//      b2 = input(wakufuku, 1);
-//      checkWin(wakufuku, done && !wakufuku.$inputs[0].disabled && (
-//        (b1 === p1.bracketNumber && b2 === p2.bracketNumber)
-//        || (b1 === p2.bracketNumber && b2 === p1.bracketNumber)
-//      ));
 
       // 2 brackets' horse are in top 2, in order
       winChoices = [
@@ -580,25 +586,13 @@
       ];
       checkWin(wakutan, winChoices, '→');
       showWin(wakutan, winChoices);
-//      b1 = input(wakutan, 0);
-//      b2 = input(wakutan, 1);
-//      checkWin(wakutan, done && !wakutan.$inputs[0].disabled && (
-//        b1 === p1.bracketNumber && b2 === p2.bracketNumber
-//      ));
 
       // 2 horses are in top 2, any order
       winChoices = [
-        [places[0].horseNumber, places[1].horseNumber].join('―'),
-        [places[1].horseNumber, places[0].horseNumber].join('―'),
+        [places[0].horseNumber, places[1].horseNumber].sort(SORT_NUM).join('―'),
       ];
       checkWin(umafuku, winChoices, '―');
       showWin(umafuku, winChoices);
-//      b1 = input(umafuku, 0);
-//      b2 = input(umafuku, 1);
-//      checkWin(umafuku, done && !umafuku.$inputs[0].disabled && (
-//        (b1 === p1.horseNumber && b2 === p2.horseNumber)
-//        || (b1 === p2.horseNumber && b2 === p1.horseNumber)
-//      ));
 
       // 2 horses are in top 2, in order
       winChoices = [
@@ -606,65 +600,46 @@
       ];
       checkWin(umatan, winChoices, '→');
       showWin(umatan, winChoices);
-//      b1 = input(umatan, 0);
-//      b2 = input(umatan, 1);
-//      checkWin(umatan, done && !umatan.$inputs[0].disabled && (
-//        b1 === p1.horseNumber && b2 === p2.horseNumber
-//      ));
 
       if (!places[2]) return;
 
       // 2 horses are in top 3, any order
       winChoices = [
-        [places[0].horseNumber, places[1].horseNumber].join('ー'),
-        [places[1].horseNumber, places[2].horseNumber].join('ー'),
-        [places[2].horseNumber, places[0].horseNumber].join('ー'),
+        [places[0].horseNumber, places[1].horseNumber].sort(SORT_NUM).join('―'),
+        [places[1].horseNumber, places[2].horseNumber].sort(SORT_NUM).join('―'),
+        [places[2].horseNumber, places[0].horseNumber].sort(SORT_NUM).join('―'),
       ];
-      checkWin(wide, winChoices, 'ー');
+      checkWin(wide, winChoices, '―');
       showWin(wide, winChoices);
-//      b1 = input(wide, 0);
-//      b2 = input(wide, 1);
-//      checkWin(wide, done && !wide.$inputs[0].disabled && (
-//        (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
-//        && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
-//      ));
 
       // 3 horses are in top 3, any order
       winChoices = [
-        [places[0].horseNumber, places[1].horseNumber, places[2].horseNumber].join('ー'),
-        [places[0].horseNumber, places[2].horseNumber, places[1].horseNumber].join('ー'),
-        [places[1].horseNumber, places[0].horseNumber, places[2].horseNumber].join('ー'),
-        [places[1].horseNumber, places[2].horseNumber, places[0].horseNumber].join('ー'),
-        [places[2].horseNumber, places[0].horseNumber, places[1].horseNumber].join('ー'),
-        [places[2].horseNumber, places[1].horseNumber, places[0].horseNumber].join('ー'),
+        [places[0].horseNumber, places[1].horseNumber, places[2].horseNumber].sort(SORT_NUM).join('―'),
       ];
-      checkWin(sanrenfuku, winChoices, 'ー');
+      checkWin(sanrenfuku, winChoices, '―');
       showWin(sanrenfuku, winChoices);
-//      b1 = input(sanrenfuku, 0);
-//      b2 = input(sanrenfuku, 1);
-//      b3 = input(sanrenfuku, 2);
-//      checkWin(sanrenfuku, done && !sanrenfuku.$inputs[0].disabled && (
-//        (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
-//        && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
-//        && (b3 === p1.horseNumber || b3 === p2.horseNumber || b3 === p3.horseNumber)
-//      ));
 
       // 3 horses horses are in top 3, in order
       winChoices = [
-        [places[0].horseNumber, places[1].horseNumber, places[2].horseNumber].join('ー'),
+        [places[0].horseNumber, places[1].horseNumber, places[2].horseNumber].join('→'),
       ];
-      checkWin(umarentan, winChoices, 'ー');
+      checkWin(umarentan, winChoices, '→');
       showWin(umarentan, winChoices);
-//      b1 = input(umarentan, 0);
-//      b2 = input(umarentan, 1);
-//      b3 = input(umarentan, 2);
-//      checkWin(umarentan, done && !umarentan.$inputs[0].disabled && (
-//        b1 === p1.horseNumber && b2 === p2.horseNumber && b3 === p3.horseNumber
-//      ));
     }
 
-    function checkWin(bet, win) {
-      bet.$inputs[0].parentElement.style.background = win ? COLOURS.WIN : COLOURS.DEFAULT;
+    function checkWin(bet, winChoices, delim = '') {
+      if (bet.$inputs[0].disabled) return;
+
+      let choices = [];
+      bet.$inputs.forEach(($input) => choices.push($input.value))
+
+      if (winChoices.indexOf(choices.join(delim)) === -1) return;
+
+      bet.$row.className = 'win';
+    }
+
+    function showWin(bet, winChoices) {
+      bet.$win.innerText = winChoices.join(', ');
     }
 
     function input(bet, index) {
