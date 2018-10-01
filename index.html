@@ -522,7 +522,6 @@
     }
 
     function checkBets() {
-      const done = places.length > 0;
       const p1 = places[0];
       const p2 = places[1];
       const p3 = places[2];
@@ -531,75 +530,137 @@
       let b2 = 0;
       let b3 = 0;
 
+      let winChoices = [];
+
       // horse is 1st
-      b1 = input(tanshou, 0);
-      checkWin(tanshou, done && !tanshou.$inputs[0].disabled && (
-        b1 === p1.horseNumber
-      ));
+      winChoices = [
+        places[0].horseNumber.toString(),
+      ];
+      checkWin(tanshou, winChoices);
+      showWin(tanshou, winChoices);
+//      b1 = input(tanshou, 0);
+//      checkWin(tanshou, done && !tanshou.$inputs[0].disabled && (
+//        b1 === p1.horseNumber
+//      ));
+
+      if (!places[1]) return;
 
       // horse is in top 3 (top 2 if < 8 horses)
-      b1 = input(fukushou, 0);
-      checkWin(fukushou, done && !fukushou.$inputs[0].disabled && (
-          b1 === p1.horseNumber
-          || b1 === p2.horseNumber
-          || ($numHorses.value > NUM_BRACKETS && b1 === p3.horseNumber)
-      ));
+      winChoices = [
+        places[0].horseNumber.toString(),
+        places[1].horseNumber.toString(),
+      ];
+      if ($numHorses.value > NUM_BRACKETS) winChoices.push(places[2].horseNumber.toString());
+      checkWin(fukushou, winChoices);
+      showWin(fukushou, winChoices)
+//      b1 = input(fukushou, 0);
+//      checkWin(fukushou, done && !fukushou.$inputs[0].disabled && (
+//          b1 === p1.horseNumber
+//          || b1 === p2.horseNumber
+//          || ($numHorses.value > NUM_BRACKETS && b1 === p3.horseNumber)
+//      ));
 
       // 2 brackets' horses are in top 2, any order
-      b1 = input(wakufuku, 0);
-      b2 = input(wakufuku, 1);
-      checkWin(wakufuku, done && !wakufuku.$inputs[0].disabled && (
-        (b1 === p1.bracketNumber && b2 === p2.bracketNumber)
-        || (b1 === p2.bracketNumber && b2 === p1.bracketNumber)
-      ));
+      winChoices = [
+        [places[0].bracketNumber, places[1].bracketNumber].join('―'),
+        [places[1].bracketNumber, places[0].bracketNumber].join('―'),
+      ];
+      checkWin(wakufuku, winChoices, '―');
+      showWin(wakufuku, winChoices);
+//      b1 = input(wakufuku, 0);
+//      b2 = input(wakufuku, 1);
+//      checkWin(wakufuku, done && !wakufuku.$inputs[0].disabled && (
+//        (b1 === p1.bracketNumber && b2 === p2.bracketNumber)
+//        || (b1 === p2.bracketNumber && b2 === p1.bracketNumber)
+//      ));
 
       // 2 brackets' horse are in top 2, in order
-      b1 = input(wakutan, 0);
-      b2 = input(wakutan, 1);
-      checkWin(wakutan, done && !wakutan.$inputs[0].disabled && (
-        b1 === p1.bracketNumber && b2 === p2.bracketNumber
-      ));
+      winChoices = [
+        [places[0].bracketNumber, places[1].bracketNumber].join('→'),
+      ];
+      checkWin(wakutan, winChoices, '→');
+      showWin(wakutan, winChoices);
+//      b1 = input(wakutan, 0);
+//      b2 = input(wakutan, 1);
+//      checkWin(wakutan, done && !wakutan.$inputs[0].disabled && (
+//        b1 === p1.bracketNumber && b2 === p2.bracketNumber
+//      ));
 
       // 2 horses are in top 2, any order
-      b1 = input(umafuku, 0);
-      b2 = input(umafuku, 1);
-      checkWin(umafuku, done && !umafuku.$inputs[0].disabled && (
-        (b1 === p1.horseNumber && b2 === p2.horseNumber)
-        || (b1 === p2.horseNumber && b2 === p1.horseNumber)
-      ));
+      winChoices = [
+        [places[0].horseNumber, places[1].horseNumber].join('―'),
+        [places[1].horseNumber, places[0].horseNumber].join('―'),
+      ];
+      checkWin(umafuku, winChoices, '―');
+      showWin(umafuku, winChoices);
+//      b1 = input(umafuku, 0);
+//      b2 = input(umafuku, 1);
+//      checkWin(umafuku, done && !umafuku.$inputs[0].disabled && (
+//        (b1 === p1.horseNumber && b2 === p2.horseNumber)
+//        || (b1 === p2.horseNumber && b2 === p1.horseNumber)
+//      ));
 
       // 2 horses are in top 2, in order
-      b1 = input(umatan, 0);
-      b2 = input(umatan, 1);
-      checkWin(umatan, done && !umatan.$inputs[0].disabled && (
-        b1 === p1.horseNumber && b2 === p2.horseNumber
-      ));
+      winChoices = [
+        [places[0].horseNumber, places[1].horseNumber].join('→'),
+      ];
+      checkWin(umatan, winChoices, '→');
+      showWin(umatan, winChoices);
+//      b1 = input(umatan, 0);
+//      b2 = input(umatan, 1);
+//      checkWin(umatan, done && !umatan.$inputs[0].disabled && (
+//        b1 === p1.horseNumber && b2 === p2.horseNumber
+//      ));
+
+      if (!places[2]) return;
 
       // 2 horses are in top 3, any order
-      b1 = input(wide, 0);
-      b2 = input(wide, 1);
-      checkWin(wide, done && !wide.$inputs[0].disabled && (
-        (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
-        && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
-      ));
+      winChoices = [
+        [places[0].horseNumber, places[1].horseNumber].join('ー'),
+        [places[1].horseNumber, places[2].horseNumber].join('ー'),
+        [places[2].horseNumber, places[0].horseNumber].join('ー'),
+      ];
+      checkWin(wide, winChoices, 'ー');
+      showWin(wide, winChoices);
+//      b1 = input(wide, 0);
+//      b2 = input(wide, 1);
+//      checkWin(wide, done && !wide.$inputs[0].disabled && (
+//        (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
+//        && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
+//      ));
 
       // 3 horses are in top 3, any order
-      b1 = input(sanrenfuku, 0);
-      b2 = input(sanrenfuku, 1);
-      b3 = input(sanrenfuku, 2);
-      checkWin(sanrenfuku, done && !sanrenfuku.$inputs[0].disabled && (
-        (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
-        && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
-        && (b3 === p1.horseNumber || b3 === p2.horseNumber || b3 === p3.horseNumber)
-      ));
+      winChoices = [
+        [places[0].horseNumber, places[1].horseNumber, places[2].horseNumber].join('ー'),
+        [places[0].horseNumber, places[2].horseNumber, places[1].horseNumber].join('ー'),
+        [places[1].horseNumber, places[0].horseNumber, places[2].horseNumber].join('ー'),
+        [places[1].horseNumber, places[2].horseNumber, places[0].horseNumber].join('ー'),
+        [places[2].horseNumber, places[0].horseNumber, places[1].horseNumber].join('ー'),
+        [places[2].horseNumber, places[1].horseNumber, places[0].horseNumber].join('ー'),
+      ];
+      checkWin(sanrenfuku, winChoices, 'ー');
+      showWin(sanrenfuku, winChoices);
+//      b1 = input(sanrenfuku, 0);
+//      b2 = input(sanrenfuku, 1);
+//      b3 = input(sanrenfuku, 2);
+//      checkWin(sanrenfuku, done && !sanrenfuku.$inputs[0].disabled && (
+//        (b1 === p1.horseNumber || b1 === p2.horseNumber || b1 === p3.horseNumber)
+//        && (b2 === p1.horseNumber || b2 === p2.horseNumber || b2 === p3.horseNumber)
+//        && (b3 === p1.horseNumber || b3 === p2.horseNumber || b3 === p3.horseNumber)
+//      ));
 
       // 3 horses horses are in top 3, in order
-      b1 = input(umarentan, 0);
-      b2 = input(umarentan, 1);
-      b3 = input(umarentan, 2);
-      checkWin(umarentan, done && !umarentan.$inputs[0].disabled && (
-        b1 === p1.horseNumber && b2 === p2.horseNumber && b3 === p3.horseNumber
-      ));
+      winChoices = [
+        [places[0].horseNumber, places[1].horseNumber, places[2].horseNumber].join('ー'),
+      ];
+      checkWin(umarentan, winChoices, 'ー');
+      showWin(umarentan, winChoices);
+//      b1 = input(umarentan, 0);
+//      b2 = input(umarentan, 1);
+//      b3 = input(umarentan, 2);
+//      checkWin(umarentan, done && !umarentan.$inputs[0].disabled && (
+//        b1 === p1.horseNumber && b2 === p2.horseNumber && b3 === p3.horseNumber
+//      ));
     }
 
     function checkWin(bet, win) {
