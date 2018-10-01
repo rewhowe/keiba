@@ -35,88 +35,126 @@
           <th>賭式(かけしき - Bet)</th>
           <th>Options</th>
           <th>%</th>
-          <th>Description</th>
+          <th>Winning Choice(s)</th>
         </tr>
         <tr id="bet_tanshou">
-          <td class="bet">単勝(たんしょう - Win)</td>
+          <td class="bet">
+            単勝(たんしょう - Win)
+            <div class="info">
+              ?<div class="desc">Bet which horse will place 1st</div>
+            </div>
+          </td>
           <td class="options">
             <input type="number"></input>
           </td>
-          <td id="p_tanshou" class="probability"></td>
-          <td class="desc">Bet which horse will place 1st</td>
+          <td class="probability js-probability"></td>
+          <td class="js-win-choice"></td>
         </tr>
         <tr id="bet_fukushou">
-          <td class="bet">複勝(ふくしょう - Places)</td>
+          <td class="bet">
+            複勝(ふくしょう - Places)
+            <div class="info">
+              ?<div class="desc">Bet which horse will place top 3 (top 2 if there are &lt; 8 horses)</div>
+            </div>
+          </td>
           <td class="options">
             <input type="number"></input>
           </td>
-          <td id="p_fukushou" class="probability"></td>
-          <td class="desc">Bet which horse will place top 3 (top 2 if there are &lt; 8 horses)</td>
+          <td class="probability js-probability"></td>
+          <td class="js-win-choice"></td>
         </tr>
         <tr id="bet_wakufuku">
-          <td class="bet">枠複(わくふく - Bracket Quinella)</td>
+          <td class="bet">
+            枠複(わくふく - Bracket Quinella)
+            <div class="info">
+              ?<div class="desc">Bet which brackets' horses will place top 2, in any order; Also called 枠連(わくれん)</div>
+            </div>
+          </td>
           <td class="options">
             <input type="number"></input> ― <input type="number"></input>
           </td>
-          <td id="p_wakufuku" class="probability"></td>
-          <td class="desc">
-            Bet which brackets' horses will place top 2, in any order<br>
-            Also called 枠連(わくれん)
-          </td>
+          <td class="probability js-probability"></td>
+          <td class="js-win-choice"></td>
         </tr>
         <tr id="bet_wakutan">
-          <td class="bet">枠単(わくたん - Bracket Exacta)</td>
+          <td class="bet">
+            枠単(わくたん - Bracket Exacta)
+            <div class="info">
+              ?<div class="desc">Bet which brackets' horses will place top 2, in order</div>
+            </div>
+          </td>
           <td class="options">
             <input type="number"></input> → <input type="number"></input>
           </td>
-          <td id="p_wakutan" class="probability"></td>
-          <td class="desc">Bet which brackets' horses will place top 2, in order</td>
+          <td class="probability js-probability"></td>
+          <td class="js-win-choice"></td>
         </tr>
         <tr id="bet_umafuku">
-          <td class="bet">馬複(うまふく - Quinella)</td>
+          <td class="bet">
+            馬複(うまふく - Quinella)
+            <div class="info">
+              ?<div class="desc">Bet which 2 horses will place top 2, in any order; Also called 馬連(うまれん)</div>
+            </div>
+          </td>
           <td class="options">
             <input type="number"></input> ― <input type="number"></input>
           </td>
-          <td id="p_umafuku" class="probability"></td>
-          <td class="desc">
-            Bet which 2 horses will place top 2, in any order<br>
-            Also called 馬連(うまれん)
-          </td>
+          <td class="probability js-probability"></td>
+          <td class="js-win-choice"></td>
         </tr>
         <tr id="bet_umatan">
-          <td class="bet">馬単(うまたん - Exacta)</td>
+          <td class="bet">
+            馬単(うまたん - Exacta)
+            <div class="info">
+              ?<div class="desc">Bet which 2 horses will place top 2, in order (difficult)</div>
+            </div>
+          </td>
           <td class="options">
             <input type="number"></input> → <input type="number"></input>
           </td>
-          <td id="p_umatan" class="probability"></td>
-          <td class="desc">Bet which 2 horses will place top 2, in order (difficult)</td>
+          <td class="probability js-probability"></td>
+          <td class="js-win-choice"></td>
         </tr>
         <tr id="bet_wide">
-          <td class="bet">ワイド(Wide)</td>
+          <td class="bet">
+            ワイド(Wide)
+            <div class="info">
+              ?<div class="desc">Bet which 2 horses will place top 3, in any order</div>
+            </div>
+          </td>
           <td class="options">
             <input type="number"></input> ― <input type="number"></input>
           </td>
-          <td id="p_wide" class="probability"></td>
-          <td class="desc">Bet which 2 horses will place top 3, in any order</td>
+          <td class="probability js-probability"></td>
+          <td class="js-win-choice"></td>
         </tr>
         <tr id="bet_sanrenfuku">
-          <td class="bet">3連複(さんれんふく - Trio)</td>
+          <td class="bet">
+            3連複(さんれんふく - Trio)
+            <div class="info">
+              ?<div class="desc">Bet which 3 horses will place top 3, in any order</div>
+            </div>
+          </td>
           <td class="options">
             <input type="number"></input> ― <input type="number"></input> ― <input type="number"></input>
           </td>
-          <td id="p_sanrenfuku" class="probability"></td>
-          <td class="desc">Bet which 3 horses will place top 3, in any order</td>
+          <td class="probability js-probability"></td>
+          <td class="js-win-choice"></td>
         </tr>
         <tr id="bet_umarentan">
-          <td class="bet">3連単(さんれんたん - Trifecta)</td>
+          <td class="bet">
+            3連単(さんれんたん - Trifecta)
+            <div class="info">
+              ?<div class="desc">
+                Bet which 3 horses will place top 3, in order (most difficult); Also called 3連単(さんれんたん)
+              </div>
+            </div>
+          </td>
           <td class="options">
             <input type="number"></input> → <input type="number"></input> → <input type="number"></input>
           </td>
-          <td id="p_umarentan" class="probability"></td>
-          <td class="desc">
-            Bet which 3 horses will place top 3, in order (this is the most difficult)<br>
-            Also called 3連単(さんれんたん)
-          </td>
+          <td class="probability js-probability"></td>
+          <td class="js-win-choice"></td>
         </tr>
       </table>
     </div>
@@ -153,13 +191,46 @@
     #controls { padding-top: 20px; }
 
     #settings { margin-top: 10px; }
+      #settings th,
+      #settings td { padding: 10px; }
       #settings input:disabled { background: #EEE; }
 
     .text-small { font-size: 80%; }
     .start { float: left; }
     .finish { float: right; }
-    .probability { width: 4em; }
+    .probability {
+      width: 4em;
+      text-align: right;
+    }
       .probability:after { content: '％'; }
+    .info {
+      display: inline-block;
+      position: relative;
+      border: 1px solid #33B;
+      border-radius: 15px;
+      padding: 5px 10px;
+      margin-left: 10px;
+      line-height: 18px;
+        float: right;
+    }
+      .info .desc { display: none; }
+      .info:hover {
+        color: transparent;
+        background: #EEF;
+        cursor: pointer;
+      }
+        .info:hover .desc {
+          position: absolute;
+          display: block;
+          top: -1;
+          left: 15px;
+          width: max-content;
+          color: #000;
+          background: #EEF;
+          border: 1px solid #33B;
+          border-left: none;
+          padding: 5px 5px 5px 10px;
+        }
 
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button {
@@ -193,39 +264,48 @@
 
     const tanshou = {
       $inputs: document.querySelectorAll('#bet_tanshou input'),
-      $probability: document.querySelector('#p_tanshou'),
+      $probability: document.querySelector('#bet_tanshou .js-probability'),
+      $win: document.querySelector('#bet_tanshou .js-win-choice'),
     };
     const fukushou = {
       $inputs: document.querySelectorAll('#bet_fukushou input'),
-      $probability: document.querySelector('#p_fukushou'),
+      $probability: document.querySelector('#bet_fukushou .js-probability'),
+      $win: document.querySelector('#bet_fukushou .js-win-choice'),
     };
     const wakufuku = {
       $inputs: document.querySelectorAll('#bet_wakufuku input'),
-      $probability: document.querySelector('#p_wakufuku'),
+      $probability: document.querySelector('#bet_wakufuku .js-probability'),
+      $win: document.querySelector('#bet_wakufuku .js-win-choice'),
     };
     const wakutan = {
       $inputs: document.querySelectorAll('#bet_wakutan input'),
-      $probability: document.querySelector('#p_wakutan'),
+      $probability: document.querySelector('#bet_wakutan .js-probability'),
+      $win: document.querySelector('#bet_wakutan .js-win-choice'),
     };
     const umafuku = {
       $inputs: document.querySelectorAll('#bet_umafuku input'),
-      $probability: document.querySelector('#p_umafuku'),
+      $probability: document.querySelector('#bet_umafuku .js-probability'),
+      $win: document.querySelector('#bet_umafuku .js-win-choice'),
     };
     const umatan = {
       $inputs: document.querySelectorAll('#bet_umatan input'),
-      $probability: document.querySelector('#p_umatan'),
+      $probability: document.querySelector('#bet_umatan .js-probability'),
+      $win: document.querySelector('#bet_umatan .js-win-choice'),
     };
     const wide = {
       $inputs: document.querySelectorAll('#bet_wide input'),
-      $probability: document.querySelector('#p_wide'),
+      $probability: document.querySelector('#bet_wide .js-probability'),
+      $win: document.querySelector('#bet_wide .js-win-choice'),
     };
     const sanrenfuku = {
       $inputs: document.querySelectorAll('#bet_sanrenfuku input'),
-      $probability: document.querySelector('#p_sanrenfuku'),
+      $probability: document.querySelector('#bet_sanrenfuku .js-probability'),
+      $win: document.querySelector('#bet_sanrenfuku .js-win-choice'),
     };
     const umarentan = {
       $inputs: document.querySelectorAll('#bet_umarentan input'),
-      $probability: document.querySelector('#p_umarentan'),
+      $probability: document.querySelector('#bet_umarentan .js-probability'),
+      $win: document.querySelector('#bet_umarentan .js-win-choice'),
     };
 
     let intervalId = null;
