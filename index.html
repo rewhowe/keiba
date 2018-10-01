@@ -141,13 +141,11 @@
           <td class="probability js-probability"></td>
           <td class="js-win-choice"></td>
         </tr>
-        <tr id="bet_umarentan">
+        <tr id="bet_sanrentan">
           <td class="bet">
             3連単(さんれんたん - Trifecta)
             <div class="info">
-              ?<div class="desc">
-                Bet which 3 horses will place top 3, in order (most difficult); Also called 3連単(さんれんたん)
-              </div>
+              ?<div class="desc">Bet which 3 horses will place top 3, in order (most difficult)</div>
             </div>
           </td>
           <td class="options">
@@ -312,11 +310,11 @@
       $probability: document.querySelector('#bet_sanrenfuku .js-probability'),
       $win: document.querySelector('#bet_sanrenfuku .js-win-choice'),
     };
-    const umarentan = {
-      $row: document.querySelector('#bet_umarentan'),
-      $inputs: document.querySelectorAll('#bet_umarentan input'),
-      $probability: document.querySelector('#bet_umarentan .js-probability'),
-      $win: document.querySelector('#bet_umarentan .js-win-choice'),
+    const sanrentan = {
+      $row: document.querySelector('#bet_sanrentan'),
+      $inputs: document.querySelectorAll('#bet_sanrentan input'),
+      $probability: document.querySelector('#bet_sanrentan .js-probability'),
+      $win: document.querySelector('#bet_sanrentan .js-win-choice'),
     };
 
     let intervalId = null;
@@ -457,10 +455,10 @@
         }
         return 0;
       });
-      update(umarentan, numHorses < 4, function () {
-        if (1 <= input(umarentan, 0) && input(umarentan, 0) <= numHorses
-          && 1 <= input(umarentan, 1) && input(umarentan, 1) <= numHorses
-          && 1 <= input(umarentan, 2) && input(umarentan, 2) <= numHorses
+      update(sanrentan, numHorses < 4, function () {
+        if (1 <= input(sanrentan, 0) && input(sanrentan, 0) <= numHorses
+          && 1 <= input(sanrentan, 1) && input(sanrentan, 1) <= numHorses
+          && 1 <= input(sanrentan, 2) && input(sanrentan, 2) <= numHorses
         ) {
           return 1 / (numHorses * (numHorses - 1) * (numHorses - 2));
         }
@@ -542,7 +540,7 @@
         umatan,
         wide,
         sanrenfuku,
-        umarentan,
+        sanrentan,
       ].forEach(function (bet) {
         bet.$row.className = '';
         bet.$win.innerText = '';
@@ -622,8 +620,8 @@
       winChoices = [
         [places[0].horseNumber, places[1].horseNumber, places[2].horseNumber].join('→'),
       ];
-      checkWin(umarentan, winChoices, '→');
-      showWin(umarentan, winChoices);
+      checkWin(sanrentan, winChoices, '→');
+      showWin(sanrentan, winChoices);
     }
 
     function checkWin(bet, winChoices, delim = '') {
